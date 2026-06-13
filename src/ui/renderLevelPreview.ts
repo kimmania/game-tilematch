@@ -1,4 +1,5 @@
 import type { GameState } from '../core/types';
+import { isGrassTarget } from '../core/grassEngine';
 import { TILE_CSS } from '../core/tileColors';
 
 const CELL = 36;
@@ -44,6 +45,12 @@ export function renderLevelPreviewSvg(state: GameState, options: LevelPreviewOpt
       parts.push(
         `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="6" fill="${fill}" stroke="#4a6280" stroke-width="1"/>`,
       );
+
+      if (!cell.grass && isGrassTarget(state.grassTargets, row, col)) {
+        parts.push(
+          `<rect x="${x + 4}" y="${y + 4}" width="${CELL - 8}" height="${CELL - 8}" rx="4" fill="none" stroke="#5fd4a4" stroke-width="1.5" stroke-dasharray="3 2" opacity="0.85"/>`,
+        );
+      }
 
       if (cell.crateLayers > 0) {
         parts.push(

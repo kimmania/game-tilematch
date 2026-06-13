@@ -1,4 +1,5 @@
 import type { CascadeStep, CollectibleKind, Coord, GameState } from '../core/types';
+import { isGrassTarget } from '../core/grassEngine';
 import { specialLabel } from '../core/tile';
 import { TILE_CSS } from '../core/tileColors';
 import { createTileElement, playCascadeAnimations } from './boardAnimations';
@@ -33,6 +34,7 @@ function cellLabel(state: GameState, row: number, col: number): string {
 
   if (cell.jelly) parts.push('jelly');
   if (cell.grass) parts.push('grass');
+  else if (isGrassTarget(state.grassTargets, row, col)) parts.push('grass goal');
   if (cell.crateLayers > 0) parts.push(`crate ${cell.crateLayers} layers`);
   if (cell.iceLayers > 0) parts.push(`ice ${cell.iceLayers} layers`);
   if (cell.collectible) parts.push(`collect ${collectibleLabel(cell.collectible)}`);
@@ -60,6 +62,7 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
     state = current;
     selected = sel;
     root.style.setProperty('--grid-cols', String(current.cols));
+    root.style.setProperty('--grid-rows', String(current.rows));
     root.replaceChildren();
 
     for (let row = 0; row < current.rows; row += 1) {
@@ -75,6 +78,7 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
         if (isSelected) cell.classList.add('selected');
         if (slot.jelly) cell.classList.add('has-jelly');
         if (slot.grass) cell.classList.add('has-grass');
+        else if (isGrassTarget(current.grassTargets, row, col)) cell.classList.add('grass-goal');
         if (slot.crateLayers > 0) cell.classList.add('has-crate');
         if (slot.iceLayers > 0) cell.classList.add('has-ice');
 

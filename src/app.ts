@@ -55,7 +55,7 @@ const HINTS: Record<number, string> = {
   15: 'Use rockets, bombs, and propellers together to clear jelly and crates.',
   31: 'Match on or next to cherries to collect them.',
   32: 'Clear tiles in a cherry column — the cherry rides down on the candy below it until it exits the bottom row.',
-  33: 'Match next to green grass to spread it. Cover all grass goal tiles to win.',
+  33: 'Green dashed tiles are grass goals — spread grass onto all of them to win.',
   34: 'Score goal is high so you can experiment. Match 5 in a straight line for a color bomb, then swap it to clear that color and score big.',
 };
 

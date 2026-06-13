@@ -73,7 +73,7 @@ const STEPS: Record<TutorialId, TutorialStep[]> = {
     },
     {
       title: 'Cover the goal',
-      body: 'Spread grass onto all highlighted goal tiles before you run out of moves.',
+      body: 'Spread grass onto all dashed-green goal tiles before you run out of moves.',
     },
   ],
   'color-bomb': [

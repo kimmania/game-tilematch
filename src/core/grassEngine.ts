@@ -38,3 +38,7 @@ export function countGrassOnTargets(grid: Grid, targets: Coord[]): number {
   }
   return count;
 }
+
+export function isGrassTarget(targets: Coord[], row: number, col: number): boolean {
+  return targets.some((t) => t.row === row && t.col === col);
+}

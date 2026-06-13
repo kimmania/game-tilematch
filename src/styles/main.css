@@ -28,6 +28,19 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
+  --app-height: calc(100vh - var(--safe-top) - var(--safe-bottom) - 24px);
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --app-height: calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);
+  }
+}
+
+@supports (height: 100svh) {
+  :root {
+    --app-height: calc(100svh - var(--safe-top) - var(--safe-bottom) - 24px);
+  }
 }
 
 *,
@@ -39,19 +52,24 @@
 html {
   -webkit-text-size-adjust: 100%;
   height: 100%;
+  height: -webkit-fill-available;
 }
 
 body {
   margin: 0;
-  min-height: 100dvh;
+  min-height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-deep);
   background-image:
     radial-gradient(900px 520px at 50% -10%, var(--bg-glow), transparent 62%),
     radial-gradient(600px 400px at 100% 100%, rgba(74, 156, 240, 0.08), transparent 55%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+  background-attachment: fixed;
   color: var(--text);
   touch-action: manipulation;
+  overflow-x: hidden;
   padding:
     calc(12px + var(--safe-top))
     calc(12px + var(--safe-right))
@@ -62,13 +80,16 @@ body {
 #app {
   max-width: 440px;
   margin: 0 auto;
-  min-height: calc(100dvh - 24px);
+  height: var(--app-height);
+  max-height: var(--app-height);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  overflow: hidden;
 }
 
 .header {
+  flex-shrink: 0;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -141,6 +162,7 @@ body {
 
 .continue-banner {
   margin: 0;
+  flex-shrink: 0;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
@@ -152,6 +174,7 @@ body {
 }
 
 .game-hud {
+  flex-shrink: 0;
   padding: 12px 14px;
   border-radius: var(--radius);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 40%), var(--surface);
@@ -229,19 +252,27 @@ body {
 }
 
 .game-area {
-  flex: 1;
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 0;
+  overflow: hidden;
 }
 
 .board-host {
   width: 100%;
-  max-width: min(100%, 380px);
+  max-width: 380px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .board-frame {
+  width: min(100%, 380px);
+  max-height: 100%;
+  aspect-ratio: 1;
   padding: 6px;
   border-radius: calc(var(--radius) + 6px);
   background: linear-gradient(145deg, #3a5270, var(--board-edge));
@@ -252,7 +283,10 @@ body {
 .grid-board {
   display: grid;
   grid-template-columns: repeat(var(--grid-cols, 7), 1fr);
+  grid-template-rows: repeat(var(--grid-rows, 8), 1fr);
   gap: 5px;
+  width: 100%;
+  height: 100%;
   padding: 10px;
   border-radius: calc(var(--radius) + 2px);
   background:
@@ -282,7 +316,8 @@ body {
 }
 
 .grid-cell {
-  aspect-ratio: 1;
+  min-width: 0;
+  min-height: 0;
   border: none;
   border-radius: var(--radius-sm);
   background: linear-gradient(180deg, var(--cell) 0%, var(--cell-deep) 100%);
@@ -315,6 +350,23 @@ body {
   box-shadow:
     inset 0 0 0 2px rgba(95, 212, 164, 0.5),
     inset 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.grid-cell.grass-goal {
+  background: linear-gradient(180deg, rgba(95, 212, 164, 0.12) 0%, var(--cell-deep) 100%);
+  box-shadow:
+    inset 0 0 0 2px rgba(95, 212, 164, 0.35),
+    inset 0 2px 4px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.grid-cell.grass-goal::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 2px dashed rgba(95, 212, 164, 0.75);
+  border-radius: 5px;
+  pointer-events: none;
 }
 
 .grid-cell.has-grass::before,
@@ -481,6 +533,7 @@ body {
 }
 
 .win-panel {
+  flex-shrink: 0;
   text-align: center;
   padding: 14px 16px;
   border-radius: var(--radius);
@@ -526,6 +579,7 @@ body {
 }
 
 .controls {
+  flex-shrink: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
@@ -1056,6 +1110,42 @@ body {
   .btn,
   .level-cell {
     transition: none;
+  }
+}
+
+/* Short viewports (e.g. iPad landscape, mobile browser chrome) */
+@media (max-height: 760px) {
+  #app {
+    gap: 6px;
+  }
+
+  .game-hud {
+    padding: 8px 12px;
+  }
+
+  .level-title {
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
+
+  .hint {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+}
+
+@media (max-height: 640px) {
+  .hint {
+    display: none;
+  }
+
+  .title {
+    font-size: 1.15rem;
+  }
+
+  .hud-stat-card {
+    padding: 6px 8px;
   }
 }
 
