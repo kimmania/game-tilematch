@@ -61,8 +61,9 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
   function renderBoard(current: GameState, sel: Coord | null = selected): void {
     state = current;
     selected = sel;
+    host.style.setProperty('--grid-cols', String(current.cols));
+    host.style.setProperty('--grid-rows', String(current.rows));
     root.style.setProperty('--grid-cols', String(current.cols));
-    root.style.setProperty('--grid-rows', String(current.rows));
     root.replaceChildren();
 
     for (let row = 0; row < current.rows; row += 1) {
