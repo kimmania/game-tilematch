@@ -68,6 +68,20 @@ export function renderLevelPreviewSvg(state: GameState, options: LevelPreviewOpt
           `<text x="${x + CELL - 6}" y="${y + 12}" text-anchor="end" fill="#1e2a3a" font-size="9" font-weight="700">${cell.iceLayers}</text>`,
         );
       }
+
+      if (cell.collectible) {
+        const fill = cell.collectible === 'cherry' ? '#c62828' : '#f0b429';
+        parts.push(
+          `<circle cx="${x + CELL - 8}" cy="${y + 8}" r="5" fill="${fill}" stroke="#fff" stroke-width="1"/>`,
+        );
+      }
+
+      if (cell.drop) {
+        const fill = cell.drop === 'cherry' ? '#c62828' : '#f0b429';
+        parts.push(
+          `<circle cx="${x + 8}" cy="${y + CELL - 8}" r="5" fill="${fill}" stroke="#fff" stroke-width="1"/>`,
+        );
+      }
     }
   }
 

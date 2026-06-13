@@ -119,6 +119,14 @@
     {
       "id": 30,
       "name": "Crown challenge"
+    },
+    {
+      "id": 31,
+      "name": "Cherry pick"
+    },
+    {
+      "id": 32,
+      "name": "Cherry drop"
     }
   ],
   "chapters": [
@@ -170,6 +178,13 @@
         28,
         29,
         30
+      ]
+    },
+    {
+      "name": "Objectives",
+      "levelIds": [
+        31,
+        32
       ]
     }
   ]

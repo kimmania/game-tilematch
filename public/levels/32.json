@@ -1,0 +1,22 @@
+{
+  "id": 32,
+  "name": "Cherry drop",
+  "rows": 8,
+  "cols": 8,
+  "moves": 20,
+  "colors": 4,
+  "seed": 2032,
+  "goals": [
+    { "type": "score", "target": 2800 },
+    { "type": "drop", "target": 4, "item": "cherry" }
+  ],
+  "stars": [2800, 4200, 5800],
+  "layout": {
+    "drops": [
+      { "row": 1, "col": 2, "kind": "cherry" },
+      { "row": 1, "col": 5, "kind": "cherry" },
+      { "row": 2, "col": 3, "kind": "cherry" },
+      { "row": 2, "col": 4, "kind": "cherry" }
+    ]
+  }
+}

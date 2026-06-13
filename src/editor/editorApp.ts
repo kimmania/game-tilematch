@@ -22,7 +22,9 @@ const TOOL_HINTS: Record<EditorTool, string> = {
   jelly: 'Tap a cell to toggle jelly (background goal tile).',
   crate: 'Tap to cycle crate: none → 1 layer → 2 layers → remove.',
   ice: 'Tap to cycle ice: none → 1 layer → 2 layers → remove.',
-  erase: 'Tap to remove jelly, crate, and ice from a cell.',
+  collect: 'Tap to cycle collect: none → cherry → coin → remove.',
+  drop: 'Tap to cycle drop: none → cherry → coin → remove.',
+  erase: 'Tap to remove all blockers and items from a cell.',
 };
 
 async function loadInitialDraft(): Promise<EditorDraft> {
@@ -81,6 +83,8 @@ export async function bootstrapEditor(): Promise<void> {
     { id: 'jelly', label: 'Jelly' },
     { id: 'crate', label: 'Crate' },
     { id: 'ice', label: 'Ice' },
+    { id: 'collect', label: 'Collect' },
+    { id: 'drop', label: 'Drop' },
     { id: 'erase', label: 'Erase' },
   ];
 
@@ -162,6 +166,14 @@ export async function bootstrapEditor(): Promise<void> {
   jellyGoalCheck.type = 'checkbox';
   jellyGoalCheck.checked = draft.includeJellyGoal;
 
+  const collectGoalCheck = document.createElement('input');
+  collectGoalCheck.type = 'checkbox';
+  collectGoalCheck.checked = draft.includeCollectGoal;
+
+  const dropGoalCheck = document.createElement('input');
+  dropGoalCheck.type = 'checkbox';
+  dropGoalCheck.checked = draft.includeDropGoal;
+
   metaForm.append(
     field('Id', idInput),
     field('Name', nameInput),
@@ -179,7 +191,20 @@ export async function bootstrapEditor(): Promise<void> {
   jellyGoalLabel.className = 'editor-field editor-field-check';
   jellyGoalLabel.append(jellyGoalCheck, document.createTextNode(' Jelly goal (all jelly cells)'));
 
+  const collectGoalLabel = document.createElement('label');
+  collectGoalLabel.className = 'editor-field editor-field-check';
+  collectGoalLabel.append(
+    collectGoalCheck,
+    document.createTextNode(' Collect goal (cherries on board)'),
+  );
+
+  const dropGoalLabel = document.createElement('label');
+  dropGoalLabel.className = 'editor-field editor-field-check';
+  dropGoalLabel.append(dropGoalCheck, document.createTextNode(' Drop goal (cherries to bottom)'));
+
   metaForm.appendChild(jellyGoalLabel);
+  metaForm.appendChild(collectGoalLabel);
+  metaForm.appendChild(dropGoalLabel);
 
   const hint = document.createElement('p');
   hint.className = 'hint editor-hint';
@@ -245,6 +270,8 @@ export async function bootstrapEditor(): Promise<void> {
     draft.starTwo = Math.max(draft.scoreTarget + 1, Math.floor(Number(star2Input.value) || draft.starTwo));
     draft.starThree = Math.max(draft.starTwo + 1, Math.floor(Number(star3Input.value) || draft.starThree));
     draft.includeJellyGoal = jellyGoalCheck.checked;
+    draft.includeCollectGoal = collectGoalCheck.checked;
+    draft.includeDropGoal = dropGoalCheck.checked;
     normalizeDraftBounds(draft);
   }
 
@@ -266,6 +293,8 @@ export async function bootstrapEditor(): Promise<void> {
   bindNumberInput(rowsInput, () => refresh());
   bindNumberInput(colsInput, () => refresh());
   jellyGoalCheck.addEventListener('change', () => refresh());
+  collectGoalCheck.addEventListener('change', () => refresh());
+  dropGoalCheck.addEventListener('change', () => refresh());
 
   previewBtn.addEventListener('click', () => {
     readForm();
@@ -323,6 +352,8 @@ export async function bootstrapEditor(): Promise<void> {
       star2Input.value = String(draft.starTwo);
       star3Input.value = String(draft.starThree);
       jellyGoalCheck.checked = draft.includeJellyGoal;
+      collectGoalCheck.checked = draft.includeCollectGoal;
+      dropGoalCheck.checked = draft.includeDropGoal;
       refresh();
       status.textContent = `Imported level ${draft.id}.`;
       status.dataset.variant = 'ok';
@@ -333,10 +364,12 @@ export async function bootstrapEditor(): Promise<void> {
   });
 
   clearBtn.addEventListener('click', () => {
-    if (!window.confirm('Clear all jelly, crates, and ice?')) return;
+    if (!window.confirm('Clear all layout elements?')) return;
     draft.jelly = [];
     draft.crates = [];
     draft.ice = [];
+    draft.collect = [];
+    draft.drops = [];
     refresh();
   });
 

@@ -2,7 +2,7 @@ import { cellKey } from './grid';
 import { isSpecial } from './tile';
 import type { Coord, Grid, SpecialKind } from './types';
 import type { SeededRng } from './rng';
-import { cellsForSpecial, pickPropellerTarget } from './specialEngine';
+import { cellsForSpecial, pickPropellerTarget, type ObjectiveContext } from './specialEngine';
 
 const NEIGHBORS: Coord[] = [
   { row: -1, col: 0 },
@@ -117,8 +117,9 @@ export function applyPropellerHit(
   rows: number,
   cols: number,
   rng: SeededRng,
+  ctx?: ObjectiveContext,
 ): ClearResult {
-  const target = pickPropellerTarget(grid, origin, rows, cols, rng);
+  const target = pickPropellerTarget(grid, origin, rows, cols, rng, ctx);
   if (!target) return { clearedTiles: [], hitCells: [], clearedJelly: 0, activated: [] };
 
   const slot = grid[target.row]![target.col]!;

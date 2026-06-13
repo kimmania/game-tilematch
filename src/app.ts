@@ -6,8 +6,11 @@ import {
   trySwap,
 } from './core/board';
 import { fetchLevel, fetchLevelManifest, type LevelChapter } from './core/levels';
-import type { Coord, GameState, LevelDef } from './core/types';
-import { loadSettings } from './game/settings';
+import type { Coord, GameState, GoalProgress, LevelDef } from './core/types';
+import { emptyCollectibleCounts } from './core/types';
+import { configureAudio, playSound, primeAudio } from './game/audio';
+import { configureHaptics, pulseHaptic } from './game/haptics';
+import { loadSettings, saveSettings } from './game/settings';
 import {
   clearSession,
   findInProgressLevelIds,
@@ -20,6 +23,8 @@ import {
   saveSession,
   unlockNextLevel,
 } from './game/storage';
+import { shouldShowTutorial } from './game/tutorial';
+import { clearAllUserData } from './game/userData';
 import {
   bindControls,
   setContinueBanner,
@@ -35,6 +40,12 @@ import {
 } from './ui/controls';
 import { createGridBoard } from './ui/gridBoard';
 import { closeLevelPicker, isLevelPickerOpen, openLevelPicker } from './ui/levelPicker';
+import {
+  applyMotionClass,
+  closeSettingsPanel,
+  openSettingsPanel,
+} from './ui/settingsPanel';
+import { closeTutorialOverlay, isTutorialOpen, openTutorialOverlay } from './ui/tutorialOverlay';
 
 const HINTS: Record<number, string> = {
   11: 'Match 4 in a row to create a rocket. Tap two adjacent tiles to swap.',
@@ -42,7 +53,18 @@ const HINTS: Record<number, string> = {
   13: 'Match a 2×2 square to create a propeller. Clear all jelly tiles.',
   14: 'Match next to crates to break them. Chip ice before the tile can move.',
   15: 'Use rockets, bombs, and propellers together to clear jelly and crates.',
+  31: 'Match on or next to cherries to collect them.',
+  32: 'Clear tiles in a cherry column — the cherry rides down on the candy below it until it exits the bottom row.',
 };
+
+function normalizeProgress(progress: Partial<GoalProgress> | undefined): GoalProgress {
+  return {
+    score: progress?.score ?? 0,
+    jellyCleared: progress?.jellyCleared ?? 0,
+    collected: { ...emptyCollectibleCounts(), ...progress?.collected },
+    dropped: { ...emptyCollectibleCounts(), ...progress?.dropped },
+  };
+}
 
 export class TileMatchApp {
   private state: GameState | null = null;
@@ -60,11 +82,17 @@ export class TileMatchApp {
   });
 
   async init(): Promise<void> {
+    applyMotionClass(this.settings.reduceMotion);
+    configureAudio(this.settings);
+    configureHaptics(this.settings);
+    primeAudio();
+
     bindControls({
       onRestart: () => void this.restartLevel(),
       onNext: () => void this.goToLevel(this.currentLevelId() + 1),
       onPrev: () => void this.goToLevel(this.currentLevelId() - 1),
       onLevels: () => this.openLevels(),
+      onSettings: () => this.openSettings(),
     });
 
     const manifest = await fetchLevelManifest();
@@ -91,6 +119,7 @@ export class TileMatchApp {
     if (this.loading) return;
     this.loading = true;
     closeLevelPicker();
+    closeSettingsPanel();
 
     try {
       const clamped = Math.min(Math.max(levelId, 1), this.levelIds.at(-1) ?? 1);
@@ -111,7 +140,7 @@ export class TileMatchApp {
           rngState: session.rngState,
           goals: session.goals,
           stars: session.stars,
-          progress: session.progress,
+          progress: normalizeProgress(session.progress),
           totalJelly: session.totalJelly,
         };
       } else {
@@ -121,9 +150,16 @@ export class TileMatchApp {
       this.progress = { ...this.progress, currentLevel: clamped };
       saveProgress(this.progress);
       this.refreshUi();
+      this.maybeShowTutorial(clamped);
     } finally {
       this.loading = false;
     }
+  }
+
+  private maybeShowTutorial(levelId: number): void {
+    const tutorialId = shouldShowTutorial(levelId);
+    if (!tutorialId || isTutorialOpen()) return;
+    openTutorialOverlay(tutorialId, () => {});
   }
 
   private refreshUi(): void {
@@ -154,6 +190,8 @@ export class TileMatchApp {
   private handleSwap(a: Coord, b: Coord): void {
     if (!this.state || this.busy || this.state.status !== 'playing') return;
 
+    playSound('tap');
+    pulseHaptic(4);
     this.busy = true;
     this.board.setBusy(true);
 
@@ -162,10 +200,18 @@ export class TileMatchApp {
     if (!result.ok) {
       if (result.reason === 'no-match') {
         this.board.flashInvalidSwap(a, b);
+        playSound('blocked');
+        pulseHaptic(12);
       }
       this.busy = false;
       this.board.setBusy(false);
       return;
+    }
+
+    playSound('slide');
+    if (result.steps.length > 0) {
+      playSound('match');
+      pulseHaptic([6, 30, 6]);
     }
 
     this.state = result.state;
@@ -173,6 +219,8 @@ export class TileMatchApp {
 
     if (this.state.status === 'won') {
       clearSession(this.levelDef!.id);
+      playSound('win');
+      pulseHaptic([10, 40, 10, 40, 20]);
       const stars = starsEarned(this.state);
       this.progress = recordBestResult(
         unlockNextLevel(this.progress, this.levelDef!.id),
@@ -224,6 +272,42 @@ export class TileMatchApp {
         }
       },
       onClose: () => closeLevelPicker(),
+    });
+  }
+
+  private openSettings(): void {
+    if (document.getElementById('settings-panel')) {
+      closeSettingsPanel();
+      return;
+    }
+
+    openSettingsPanel({
+      settings: this.settings,
+      onChange: (next) => {
+        this.settings = next;
+        saveSettings(next);
+        applyMotionClass(next.reduceMotion);
+        configureAudio(next);
+        configureHaptics(next);
+        this.board = createGridBoard(document.getElementById('board-host')!, {
+          reduceMotion: next.reduceMotion,
+          onSwapAttempt: (a, b) => void this.handleSwap(a, b),
+        });
+        if (this.state) this.board.render(this.state);
+      },
+      onResetData: () => {
+        if (!window.confirm('Reset all progress, saves, and settings?')) return;
+        clearAllUserData();
+        closeSettingsPanel();
+        closeTutorialOverlay();
+        this.progress = loadProgress();
+        this.settings = loadSettings();
+        applyMotionClass(this.settings.reduceMotion);
+        configureAudio(this.settings);
+        configureHaptics(this.settings);
+        void this.loadLevel(1);
+      },
+      onClose: () => closeSettingsPanel(),
     });
   }
 }

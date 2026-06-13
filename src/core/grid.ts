@@ -11,7 +11,14 @@ export function parseCellKey(key: string): Coord {
 }
 
 export function createEmptyCell(): Cell {
-  return { tile: null, jelly: false, crateLayers: 0, iceLayers: 0 };
+  return {
+    tile: null,
+    jelly: false,
+    crateLayers: 0,
+    iceLayers: 0,
+    collectible: null,
+    drop: null,
+  };
 }
 
 export function createEmptyGrid(rows: number, cols: number): Grid {
@@ -151,6 +158,10 @@ export function applyGravity(grid: Grid): void {
           if (row !== writeRow) {
             grid[writeRow]![col]!.tile = tile;
             grid[row]![col]!.tile = null;
+            if (grid[row]![col]!.drop) {
+              grid[writeRow]![col]!.drop = grid[row]![col]!.drop;
+              grid[row]![col]!.drop = null;
+            }
           }
           writeRow -= 1;
         }
@@ -181,6 +192,16 @@ export function applyLayout(grid: Grid, layout: LevelLayout | undefined): number
   for (const ice of layout.ice ?? []) {
     if (!inBounds(grid, ice.row, ice.col)) continue;
     grid[ice.row]![ice.col]!.iceLayers = ice.layers;
+  }
+
+  for (const item of layout.collect ?? []) {
+    if (!inBounds(grid, item.row, item.col)) continue;
+    grid[item.row]![item.col]!.collectible = item.kind;
+  }
+
+  for (const item of layout.drops ?? []) {
+    if (!inBounds(grid, item.row, item.col)) continue;
+    grid[item.row]![item.col]!.drop = item.kind;
   }
 
   return jellyCount;

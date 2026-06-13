@@ -38,6 +38,13 @@ import type {
   SwapResult,
   TileColor,
 } from './types';
+import { emptyCollectibleCounts } from './types';
+import {
+  applyDropGravity,
+  collectExitedDrops,
+  collectFromHits,
+  mergeCounts,
+} from './collectibles';
 
 function createGridWithoutMatches(
   rows: number,
@@ -111,9 +118,30 @@ function mergeCoords(...lists: Coord[][]): Coord[] {
   return [...map.values()];
 }
 
+function applyCollectibles(state: GameState, hitCells: Coord[]): void {
+  mergeCounts(state.progress.collected, collectFromHits(state.grid, hitCells));
+}
+
+function settleDrops(state: GameState): void {
+  applyDropGravity(state.grid);
+  mergeCounts(state.progress.dropped, collectExitedDrops(state.grid));
+}
+
+/** After tiles clear: drops fall through gaps first, then tiles, then drops again. */
+function settleBoardAfterClear(state: GameState, rng: SeededRng): void {
+  applyDropGravity(state.grid);
+  applyGravity(state.grid);
+  settleDrops(state);
+  refillGrid(state.grid, state.palette, rng);
+}
+
 function damageNeighbors(grid: Grid, hitCells: Coord[]): void {
   damageAdjacentCrates(grid, hitCells);
   damageAdjacentIce(grid, hitCells);
+}
+
+function objectiveContext(state: GameState) {
+  return { goals: state.goals, progress: state.progress };
 }
 
 function propellersInCells(grid: Grid, cells: Coord[]): Coord[] {
@@ -153,11 +181,20 @@ function runCascadeStep(
   const clearResult = applyClearWave(state.grid, clearTargets);
   damageNeighbors(state.grid, clearResult.hitCells);
   state.progress.jellyCleared += clearResult.clearedJelly;
+  applyCollectibles(state, clearResult.hitCells);
 
   for (const origin of propellerOrigins) {
-    const propResult = applyPropellerHit(state.grid, origin, state.rows, state.cols, rng);
+    const propResult = applyPropellerHit(
+      state.grid,
+      origin,
+      state.rows,
+      state.cols,
+      rng,
+      objectiveContext(state),
+    );
     state.progress.jellyCleared += propResult.clearedJelly;
     damageNeighbors(state.grid, propResult.hitCells);
+    applyCollectibles(state, propResult.hitCells);
     clearResult.clearedTiles.push(...propResult.clearedTiles);
     if (propResult.activated.length > 0) {
       clearResult.activated.push(...propResult.activated);
@@ -171,8 +208,7 @@ function runCascadeStep(
     state.grid[spawn.coord.row]![spawn.coord.col]!.tile = makeTile(spawn.color, spawn.special);
   }
 
-  applyGravity(state.grid);
-  refillGrid(state.grid, state.palette, rng);
+  settleBoardAfterClear(state, rng);
 
   return {
     matches,
@@ -210,12 +246,12 @@ function runSpecialCombo(
   const clearResult = applyClearWave(state.grid, targets);
   damageNeighbors(state.grid, clearResult.hitCells);
   state.progress.jellyCleared += clearResult.clearedJelly;
+  applyCollectibles(state, clearResult.hitCells);
 
   const points = scoreForStep(clearResult.clearedTiles.length, 1);
   state.score += points;
 
-  applyGravity(state.grid);
-  refillGrid(state.grid, state.palette, rng);
+  settleBoardAfterClear(state, rng);
 
   const step: CascadeStep = {
     matches: [],
@@ -279,7 +315,12 @@ export function createGameState(level: LevelDef): GameState {
     rngState: rng.getState(),
     goals: level.goals,
     stars: level.stars,
-    progress: { score: 0, jellyCleared: 0 },
+    progress: {
+      score: 0,
+      jellyCleared: 0,
+      collected: emptyCollectibleCounts(),
+      dropped: emptyCollectibleCounts(),
+    },
     totalJelly,
   };
 }
@@ -290,7 +331,11 @@ export function cloneGameState(state: GameState): GameState {
     grid: cloneGrid(state.grid),
     goals: [...state.goals],
     stars: [...state.stars],
-    progress: { ...state.progress },
+    progress: {
+      ...state.progress,
+      collected: { ...state.progress.collected },
+      dropped: { ...state.progress.dropped },
+    },
   };
 }
 
@@ -313,7 +358,9 @@ export function starsEarned(state: GameState): number {
 
 function goalMet(state: GameState, goal: LevelGoal): boolean {
   if (goal.type === 'score') return state.score >= goal.target;
-  return state.progress.jellyCleared >= goal.target;
+  if (goal.type === 'jelly') return state.progress.jellyCleared >= goal.target;
+  if (goal.type === 'collect') return state.progress.collected[goal.item] >= goal.target;
+  return state.progress.dropped[goal.item] >= goal.target;
 }
 
 export function goalsMet(state: GameState): boolean {
@@ -391,6 +438,15 @@ export function formatGoals(state: GameState): string {
   const jellyTarget = jellyGoalTarget(state);
   if (jellyTarget != null) {
     parts.push(`Jelly ${state.progress.jellyCleared}/${jellyTarget}`);
+  }
+  for (const goal of state.goals) {
+    if (goal.type === 'collect') {
+      const label = goal.item === 'cherry' ? 'Cherries' : 'Coins';
+      parts.push(`${label} ${state.progress.collected[goal.item]}/${goal.target}`);
+    } else if (goal.type === 'drop') {
+      const label = goal.item === 'cherry' ? 'Drop cherries' : 'Drop coins';
+      parts.push(`${label} ${state.progress.dropped[goal.item]}/${goal.target}`);
+    }
   }
   return parts.join(' · ');
 }

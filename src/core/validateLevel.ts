@@ -1,8 +1,22 @@
-import type { LevelDef } from './types';
+import type { CollectibleKind, LevelDef } from './types';
 import { ALL_TILE_COLORS } from './tileColors';
+
+const COLLECTIBLE_KINDS: CollectibleKind[] = ['cherry', 'coin'];
 
 function jellyCount(level: LevelDef): number {
   return level.layout?.jelly?.length ?? 0;
+}
+
+function collectCount(level: LevelDef, kind: CollectibleKind): number {
+  return (level.layout?.collect ?? []).filter((item) => item.kind === kind).length;
+}
+
+function dropCount(level: LevelDef, kind: CollectibleKind): number {
+  return (level.layout?.drops ?? []).filter((item) => item.kind === kind).length;
+}
+
+function isCollectibleKind(value: unknown): value is CollectibleKind {
+  return value === 'cherry' || value === 'coin';
 }
 
 export function validateLevel(level: LevelDef, expectedId?: number): void {
@@ -57,6 +71,32 @@ export function validateLevel(level: LevelDef, expectedId?: number): void {
       const available = jellyCount(level);
       if (goal.target > available) {
         throw new Error(`jelly goal ${goal.target} exceeds layout jelly cells (${available})`);
+      }
+    } else if (goal.type === 'collect') {
+      if (!isCollectibleKind(goal.item)) {
+        throw new Error('collect goal item must be cherry or coin');
+      }
+      if (!Number.isInteger(goal.target) || goal.target < 1) {
+        throw new Error('collect goal target must be a positive integer');
+      }
+      const available = collectCount(level, goal.item);
+      if (goal.target > available) {
+        throw new Error(
+          `collect goal ${goal.target} exceeds layout ${goal.item} items (${available})`,
+        );
+      }
+    } else if (goal.type === 'drop') {
+      if (!isCollectibleKind(goal.item)) {
+        throw new Error('drop goal item must be cherry or coin');
+      }
+      if (!Number.isInteger(goal.target) || goal.target < 1) {
+        throw new Error('drop goal target must be a positive integer');
+      }
+      const available = dropCount(level, goal.item);
+      if (goal.target > available) {
+        throw new Error(
+          `drop goal ${goal.target} exceeds layout ${goal.item} drops (${available})`,
+        );
       }
     } else {
       throw new Error(`unsupported goal type: ${(goal as { type: string }).type}`);
@@ -126,4 +166,38 @@ export function validateLevel(level: LevelDef, expectedId?: number): void {
       throw new Error('jelly coordinates out of bounds');
     }
   }
+
+  for (const item of level.layout?.collect ?? []) {
+    if (
+      !Number.isInteger(item.row) ||
+      !Number.isInteger(item.col) ||
+      item.row < 0 ||
+      item.row >= level.rows ||
+      item.col < 0 ||
+      item.col >= level.cols
+    ) {
+      throw new Error('collect coordinates out of bounds');
+    }
+    if (!isCollectibleKind(item.kind)) {
+      throw new Error('collect kind must be cherry or coin');
+    }
+  }
+
+  for (const item of level.layout?.drops ?? []) {
+    if (
+      !Number.isInteger(item.row) ||
+      !Number.isInteger(item.col) ||
+      item.row < 0 ||
+      item.row >= level.rows ||
+      item.col < 0 ||
+      item.col >= level.cols
+    ) {
+      throw new Error('drop coordinates out of bounds');
+    }
+    if (!isCollectibleKind(item.kind)) {
+      throw new Error('drop kind must be cherry or coin');
+    }
+  }
 }
+
+export { COLLECTIBLE_KINDS };

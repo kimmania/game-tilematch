@@ -50,12 +50,13 @@ A mobile-first match-3 PWA deployed to GitHub Pages. Swap adjacent tiles, create
 - 30 hand-tuned levels across 4 chapters
 - Star ratings persisted per level
 
-### M4 — Objectives + polish
+### M4 — Objectives + polish ✅
 
 - Collect items, drop-and-collect goals
 - Propeller targeting AI for objectives
 - Sound, haptics, reduce-motion settings
 - Tutorial overlays per mechanic
+- Levels 31–32 in chapter “Objectives”
 
 ### M5 — Advanced mechanics (stretch)
 

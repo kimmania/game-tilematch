@@ -31,7 +31,7 @@
 | 4 in a row | **Rocket ↔** | Clears entire row |
 | 4 in a column | **Rocket ↕** | Clears entire column |
 | 5 in a line or L/T | **Bomb** | Clears 3×3 area |
-| 2×2 square | **Propeller** | Flies to a priority target (jelly → crate → ice → tile) |
+| 2×2 square | **Propeller** | Flies to a priority target (drop → collect → jelly → crate → ice → tile) |
 
 ### Special combos (swap two adjacent specials)
 
@@ -50,17 +50,27 @@
 | **Crate** | Blocks the cell (no tile). Match **adjacent** to a crate removes one layer |
 | **Ice** | Freezes the tile (cannot swap until ice is gone). Each direct or **adjacent** match/special hit removes one layer; when the last layer breaks, the tile clears in the same wave |
 
-## Goals (M2)
+## Goals (M2–M4)
 
 | Goal | Win condition |
 |------|---------------|
 | **Score** | Reach target score (required on every level) |
 | **Jelly** | Clear target number of jelly cells |
+| **Collect** | Match on or next to static cherries/coins on the board |
+| **Drop** | Guide falling cherries/coins to the bottom row |
+
+## Collectibles (M4)
+
+| Type | Behavior |
+|------|----------|
+| **Collect** | Static item on a cell; collected when that cell or a neighbor is hit |
+| **Drop** | Sits on a tile; falls when tiles below clear; collected when it reaches the bottom row |
+
+## Settings & tutorials (M4)
+
+- **Sound**, **haptic feedback**, and **reduce motion** in the settings panel (⚙)
+- **Tutorial overlays** appear once per mechanic (levels 1, 11, 13, 14, 31, 32)
 
 ## RNG
 
 Each level has a `seed`. Initial board fill and refills use a deterministic PRNG so sessions can be saved and resumed.
-
-## Planned (M3+)
-
-See `docs/PLAN.md` for level editor, collection goals, and polish.

@@ -9,6 +9,8 @@ export type Tile = {
 
 export type Coord = { row: number; col: number };
 
+export type CollectibleKind = 'cherry' | 'coin';
+
 export type Cell = {
   tile: Tile | null;
   /** Background jelly — cleared when this cell is hit by a match or special. */
@@ -17,21 +19,31 @@ export type Cell = {
   crateLayers: number;
   /** Frozen layers on the tile — must chip away before the tile can move. */
   iceLayers: number;
+  /** Static collectible — collected when this cell or a neighbor is hit. */
+  collectible: CollectibleKind | null;
+  /** Falling item — drops with gravity and exits at the bottom row. */
+  drop: CollectibleKind | null;
 };
 
 export type Grid = Cell[][];
 
 export type ScoreGoal = { type: 'score'; target: number };
 export type JellyGoal = { type: 'jelly'; target: number };
-export type LevelGoal = ScoreGoal | JellyGoal;
+export type CollectGoal = { type: 'collect'; target: number; item: CollectibleKind };
+export type DropGoal = { type: 'drop'; target: number; item: CollectibleKind };
+export type LevelGoal = ScoreGoal | JellyGoal | CollectGoal | DropGoal;
 
 export type CrateDef = { row: number; col: number; layers: number };
 export type IceDef = { row: number; col: number; layers: number };
+export type CollectDef = { row: number; col: number; kind: CollectibleKind };
+export type DropDef = { row: number; col: number; kind: CollectibleKind };
 
 export type LevelLayout = {
   jelly?: Coord[];
   crates?: CrateDef[];
   ice?: IceDef[];
+  collect?: CollectDef[];
+  drops?: DropDef[];
 };
 
 export type LevelDef = {
@@ -49,9 +61,17 @@ export type LevelDef = {
 
 export type GameStatus = 'playing' | 'won' | 'lost';
 
+export type CollectibleCounts = Record<CollectibleKind, number>;
+
+export function emptyCollectibleCounts(): CollectibleCounts {
+  return { cherry: 0, coin: 0 };
+}
+
 export type GoalProgress = {
   score: number;
   jellyCleared: number;
+  collected: CollectibleCounts;
+  dropped: CollectibleCounts;
 };
 
 export type GameState = {

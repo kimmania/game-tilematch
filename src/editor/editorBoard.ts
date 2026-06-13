@@ -28,6 +28,8 @@ export function createEditorBoard(
         const jelly = draft.jelly.some((c) => c.row === row && c.col === col);
         const crate = draft.crates.find((c) => c.row === row && c.col === col)?.layers ?? 0;
         const ice = draft.ice.find((c) => c.row === row && c.col === col)?.layers ?? 0;
+        const collect = draft.collect.find((c) => c.row === row && c.col === col)?.kind;
+        const drop = draft.drops.find((c) => c.row === row && c.col === col)?.kind;
 
         if (jelly) btn.classList.add('has-jelly');
         if (crate > 0) btn.classList.add('has-crate');
@@ -37,6 +39,8 @@ export function createEditorBoard(
         if (jelly) parts.push('jelly');
         if (crate > 0) parts.push(`crate×${crate}`);
         if (ice > 0) parts.push(`ice×${ice}`);
+        if (collect) parts.push(`collect ${collect}`);
+        if (drop) parts.push(`drop ${drop}`);
         btn.setAttribute('aria-label', parts.join(' · '));
 
         if (crate > 0) {
@@ -55,6 +59,18 @@ export function createEditorBoard(
           const el = document.createElement('span');
           el.className = 'blocker ice';
           el.textContent = String(ice);
+          btn.appendChild(el);
+        }
+
+        if (collect) {
+          const el = document.createElement('span');
+          el.className = `collectible collectible-${collect}`;
+          btn.appendChild(el);
+        }
+
+        if (drop) {
+          const el = document.createElement('span');
+          el.className = `collectible drop-item drop-${drop}`;
           btn.appendChild(el);
         }
 

@@ -9,7 +9,8 @@ A mobile-first match-3 PWA in the Royal Match–lite style. Swap adjacent tiles,
 3. Swaps count when they create a **match of 3 or more**, a **2×2 square**, or swap two **special tiles**.
 4. Matched tiles clear, new tiles fall in, and **cascades** chain for bonus score.
 5. **Match 4** for a rocket, **5/L-shape** for a bomb, **2×2** for a propeller.
-6. **Win** by reaching all goals (score and/or jelly). Earn up to **3 stars** for higher scores.
+6. **Win** by reaching all goals (score, jelly, collect, and/or drop). Earn up to **3 stars** for higher scores.
+7. Open **Settings** (⚙) for sound, haptics, and reduce-motion options.
 
 See `docs/MECHANICS.md` for scoring rules and `docs/PLAN.md` for the milestone roadmap.
 
@@ -44,7 +45,9 @@ Open **`/game-tilematch/?edit=1`** in the browser (or add `#edit`).
 | **Jelly** | Toggle jelly on a cell |
 | **Crate** | Cycle crate layers: none → 1 → 2 → remove |
 | **Ice** | Cycle ice layers: none → 1 → 2 → remove |
-| **Erase** | Remove all blockers from a cell |
+| **Collect** | Cycle static item: none → cherry → coin → remove |
+| **Drop** | Cycle falling item: none → cherry → coin → remove |
+| **Erase** | Remove all blockers and items from a cell |
 
 Set level metadata (id, name, grid size, moves, colors, seed, score goals, stars), then **Validate**, **Copy JSON**, or **Download .json**. To ship a level, save to `public/levels/{id}.json` and run `npm run generate-manifest`.
 

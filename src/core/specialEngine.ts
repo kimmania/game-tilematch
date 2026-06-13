@@ -1,5 +1,15 @@
 import { cellKey } from './grid';
-import type { Coord, Grid, MatchGroup, SpecialKind, SpecialSpawn, TileColor } from './types';
+import type {
+  CollectibleKind,
+  Coord,
+  GoalProgress,
+  Grid,
+  LevelGoal,
+  MatchGroup,
+  SpecialKind,
+  SpecialSpawn,
+  TileColor,
+} from './types';
 
 /** Cells cleared by a special tile (excluding combo extras). */
 export function cellsForSpecial(
@@ -201,12 +211,47 @@ export function classifySpecialSpawn(
   return null;
 }
 
+export type ObjectiveContext = {
+  goals: LevelGoal[];
+  progress: GoalProgress;
+};
+
+function needsMore(goal: LevelGoal, progress: GoalProgress, kind: CollectibleKind): boolean {
+  if (goal.type === 'collect' && goal.item === kind) {
+    return progress.collected[kind] < goal.target;
+  }
+  if (goal.type === 'drop' && goal.item === kind) {
+    return progress.dropped[kind] < goal.target;
+  }
+  return false;
+}
+
+function dropPriority(cell: Grid[0][0], ctx?: ObjectiveContext): number {
+  if (!cell.drop) return 0;
+  if (ctx && needsMore({ type: 'drop', target: 0, item: cell.drop }, ctx.progress, cell.drop)) {
+    return 50;
+  }
+  return 48;
+}
+
+function collectPriority(cell: Grid[0][0], ctx?: ObjectiveContext): number {
+  if (!cell.collectible) return 0;
+  if (
+    ctx &&
+    needsMore({ type: 'collect', target: 0, item: cell.collectible }, ctx.progress, cell.collectible)
+  ) {
+    return 45;
+  }
+  return 43;
+}
+
 export function pickPropellerTarget(
   grid: Grid,
   origin: Coord,
   rows: number,
   cols: number,
   rng: { nextInt(max: number): number },
+  ctx?: ObjectiveContext,
 ): Coord | null {
   const candidates: { coord: Coord; priority: number }[] = [];
 
@@ -214,12 +259,13 @@ export function pickPropellerTarget(
     for (let col = 0; col < cols; col += 1) {
       if (row === origin.row && col === origin.col) continue;
       const cell = grid[row]![col]!;
-      let priority = 0;
-      if (cell.jelly) priority = 40;
-      else if (cell.crateLayers > 0) priority = 30;
-      else if (cell.iceLayers > 0) priority = 20;
-      else if (cell.tile) priority = 10;
-      else continue;
+      let priority = dropPriority(cell, ctx);
+      if (priority === 0) priority = collectPriority(cell, ctx);
+      if (priority === 0 && cell.jelly) priority = 40;
+      else if (priority === 0 && cell.crateLayers > 0) priority = 30;
+      else if (priority === 0 && cell.iceLayers > 0) priority = 20;
+      else if (priority === 0 && cell.tile) priority = 10;
+      else if (priority === 0) continue;
       candidates.push({ coord: { row, col }, priority });
     }
   }

@@ -1,4 +1,4 @@
-import type { Coord, GameState } from '../core/types';
+import type { CollectibleKind, Coord, GameState } from '../core/types';
 import { specialLabel } from '../core/tile';
 import { TILE_CSS } from '../core/tileColors';
 
@@ -14,6 +14,10 @@ export type GridBoard = {
   destroy: () => void;
 };
 
+function collectibleLabel(kind: CollectibleKind): string {
+  return kind === 'cherry' ? 'cherry' : 'coin';
+}
+
 function cellLabel(state: GameState, row: number, col: number): string {
   const cell = state.grid[row]![col]!;
   const parts: string[] = [];
@@ -21,6 +25,8 @@ function cellLabel(state: GameState, row: number, col: number): string {
   if (cell.jelly) parts.push('jelly');
   if (cell.crateLayers > 0) parts.push(`crate ${cell.crateLayers} layers`);
   if (cell.iceLayers > 0) parts.push(`ice ${cell.iceLayers} layers`);
+  if (cell.collectible) parts.push(`collect ${collectibleLabel(cell.collectible)}`);
+  if (cell.drop) parts.push(`drop ${collectibleLabel(cell.drop)}`);
 
   if (cell.tile) {
     const color = TILE_CSS[cell.tile.color].label;
@@ -84,6 +90,21 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
           ice.textContent = String(slot.iceLayers);
           ice.setAttribute('aria-hidden', 'true');
           cell.appendChild(ice);
+        }
+
+        if (slot.collectible) {
+          const item = document.createElement('span');
+          item.className = `collectible collectible-${slot.collectible}`;
+          item.setAttribute('aria-hidden', 'true');
+          cell.appendChild(item);
+        }
+
+        if (slot.drop) {
+          const item = document.createElement('span');
+          item.className = `collectible drop-item drop-${slot.drop}`;
+          item.setAttribute('aria-hidden', 'true');
+          cell.classList.add('has-drop');
+          cell.appendChild(item);
         }
 
         cell.setAttribute('aria-label', cellLabel(current, row, col));

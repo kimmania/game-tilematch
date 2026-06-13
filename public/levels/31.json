@@ -1,0 +1,24 @@
+{
+  "id": 31,
+  "name": "Cherry pick",
+  "rows": 8,
+  "cols": 8,
+  "moves": 18,
+  "colors": 4,
+  "seed": 2031,
+  "goals": [
+    { "type": "score", "target": 2500 },
+    { "type": "collect", "target": 6, "item": "cherry" }
+  ],
+  "stars": [2500, 3800, 5200],
+  "layout": {
+    "collect": [
+      { "row": 1, "col": 1, "kind": "cherry" },
+      { "row": 1, "col": 6, "kind": "cherry" },
+      { "row": 2, "col": 3, "kind": "cherry" },
+      { "row": 2, "col": 4, "kind": "cherry" },
+      { "row": 3, "col": 2, "kind": "cherry" },
+      { "row": 3, "col": 5, "kind": "cherry" }
+    ]
+  }
+}
