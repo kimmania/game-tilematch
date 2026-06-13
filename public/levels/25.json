@@ -1,0 +1,20 @@
+{
+  "id": 25,
+  "name": "Rising gate",
+  "rows": 8,
+  "cols": 8,
+  "moves": 12,
+  "colors": 5,
+  "seed": 3025,
+  "goals": [
+    {
+      "type": "score",
+      "target": 6500
+    }
+  ],
+  "stars": [
+    6500,
+    9200,
+    12500
+  ]
+}

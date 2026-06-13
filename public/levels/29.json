@@ -1,0 +1,84 @@
+{
+  "id": 29,
+  "name": "Royal scramble",
+  "rows": 8,
+  "cols": 8,
+  "moves": 16,
+  "colors": 5,
+  "seed": 3029,
+  "goals": [
+    {
+      "type": "score",
+      "target": 6200
+    },
+    {
+      "type": "jelly",
+      "target": 8
+    }
+  ],
+  "stars": [
+    6200,
+    8800,
+    11800
+  ],
+  "layout": {
+    "jelly": [
+      {
+        "row": 0,
+        "col": 3
+      },
+      {
+        "row": 0,
+        "col": 4
+      },
+      {
+        "row": 7,
+        "col": 3
+      },
+      {
+        "row": 7,
+        "col": 4
+      },
+      {
+        "row": 3,
+        "col": 0
+      },
+      {
+        "row": 4,
+        "col": 0
+      },
+      {
+        "row": 3,
+        "col": 7
+      },
+      {
+        "row": 4,
+        "col": 7
+      }
+    ],
+    "crates": [
+      {
+        "row": 3,
+        "col": 3,
+        "layers": 1
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "layers": 1
+      }
+    ],
+    "ice": [
+      {
+        "row": 2,
+        "col": 2,
+        "layers": 1
+      },
+      {
+        "row": 5,
+        "col": 5,
+        "layers": 1
+      }
+    ]
+  }
+}

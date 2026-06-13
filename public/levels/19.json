@@ -1,0 +1,44 @@
+{
+  "id": 19,
+  "name": "Ice line",
+  "rows": 8,
+  "cols": 8,
+  "moves": 20,
+  "colors": 4,
+  "seed": 3019,
+  "goals": [
+    {
+      "type": "score",
+      "target": 4500
+    }
+  ],
+  "stars": [
+    4500,
+    6400,
+    8800
+  ],
+  "layout": {
+    "ice": [
+      {
+        "row": 3,
+        "col": 2,
+        "layers": 1
+      },
+      {
+        "row": 3,
+        "col": 5,
+        "layers": 1
+      },
+      {
+        "row": 4,
+        "col": 2,
+        "layers": 2
+      },
+      {
+        "row": 4,
+        "col": 5,
+        "layers": 1
+      }
+    ]
+  }
+}

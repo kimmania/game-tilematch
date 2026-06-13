@@ -1,19 +1,10 @@
-import { registerSW } from 'virtual:pwa-register';
-import { bootstrap } from './app';
-import { initInstallHint } from './ui/installHint';
-import { initServiceWorkerUpdates, showServiceWorkerUpdatePrompt } from './ui/swUpdate';
+import { isEditMode } from './editor/editMode';
+import { bootstrapEditor } from './editor/editorApp';
 
-initServiceWorkerUpdates();
-
-registerSW({
-  immediate: true,
-  onNeedRefresh() {
-    showServiceWorkerUpdatePrompt();
-  },
-});
-
-bootstrap()
-  .then(() => initInstallHint())
-  .catch((error) => {
-    console.error('Failed to start app:', error);
+if (isEditMode()) {
+  bootstrapEditor().catch((error) => {
+    console.error('Failed to start editor:', error);
   });
+} else {
+  import('./bootstrapGame').then(({ startGame }) => startGame());
+}

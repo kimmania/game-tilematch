@@ -1,0 +1,72 @@
+{
+  "id": 22,
+  "name": "Crate wall",
+  "rows": 8,
+  "cols": 8,
+  "moves": 20,
+  "colors": 5,
+  "seed": 3022,
+  "goals": [
+    {
+      "type": "score",
+      "target": 5000
+    },
+    {
+      "type": "jelly",
+      "target": 8
+    }
+  ],
+  "stars": [
+    5000,
+    7200,
+    9800
+  ],
+  "layout": {
+    "jelly": [
+      {
+        "row": 1,
+        "col": 3
+      },
+      {
+        "row": 2,
+        "col": 3
+      },
+      {
+        "row": 5,
+        "col": 3
+      },
+      {
+        "row": 6,
+        "col": 3
+      },
+      {
+        "row": 1,
+        "col": 4
+      },
+      {
+        "row": 2,
+        "col": 4
+      },
+      {
+        "row": 5,
+        "col": 4
+      },
+      {
+        "row": 6,
+        "col": 4
+      }
+    ],
+    "crates": [
+      {
+        "row": 3,
+        "col": 3,
+        "layers": 1
+      },
+      {
+        "row": 3,
+        "col": 4,
+        "layers": 1
+      }
+    ]
+  }
+}

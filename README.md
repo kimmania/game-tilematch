@@ -32,11 +32,29 @@ Open the URL from the terminal (usually `http://localhost:5175/game-tilematch/`)
 | `npm run test` | Run unit tests |
 | `npm run validate-levels` | Schema + board sanity check for every level |
 | `npm run generate-manifest` | Regenerate `public/levels/index.json` |
+| `npm run generate-level-previews` | PNG/SVG snapshots of every level to `previews/` |
 | `npm run generate-icons` | Regenerate PNG icons from `public/icons/icon.svg` |
+
+## Level editor
+
+Open **`/game-tilematch/?edit=1`** in the browser (or add `#edit`).
+
+| Tool | Action |
+|------|--------|
+| **Jelly** | Toggle jelly on a cell |
+| **Crate** | Cycle crate layers: none → 1 → 2 → remove |
+| **Ice** | Cycle ice layers: none → 1 → 2 → remove |
+| **Erase** | Remove all blockers from a cell |
+
+Set level metadata (id, name, grid size, moves, colors, seed, score goals, stars), then **Validate**, **Copy JSON**, or **Download .json**. To ship a level, save to `public/levels/{id}.json` and run `npm run generate-manifest`.
+
+Edit an existing level: `?edit=1&level=14`
 
 ## Levels
 
 Levels live in `public/levels/*.json`. `public/levels/index.json` is generated — never edit it by hand. After adding a level file, run `npm run generate-manifest`.
+
+Review layouts quickly: `npm run generate-level-previews` writes to `previews/` and opens a gallery at `previews/index.html`.
 
 ## GitHub Pages
 

@@ -456,3 +456,128 @@ body {
   min-height: 36px;
   padding: 0 12px;
 }
+
+/* —— Level editor —— */
+.editor-app {
+  max-width: 520px;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.editor-tool-btn.editor-tool-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.editor-meta-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.editor-field input[type='text'],
+.editor-field input[type='number'] {
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--cell-edge);
+  background: var(--surface);
+  color: var(--text);
+  padding: 0 8px;
+  font: inherit;
+}
+
+.editor-field-check {
+  flex-direction: row;
+  align-items: center;
+  grid-column: 1 / -1;
+  color: var(--text);
+}
+
+.editor-board-host {
+  display: flex;
+  justify-content: center;
+}
+
+.editor-grid-board {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols, 8), 1fr);
+  gap: 3px;
+  padding: 8px;
+  border-radius: var(--radius);
+  background: var(--board);
+  width: 100%;
+  max-width: 380px;
+}
+
+.editor-grid-cell {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 6px;
+  background: var(--cell);
+  box-shadow: inset 0 0 0 1px var(--cell-edge);
+  padding: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.editor-grid-cell.has-jelly {
+  background: linear-gradient(180deg, rgba(240, 180, 41, 0.35), var(--cell));
+}
+
+.editor-grid-cell.has-crate {
+  background: #5c4033;
+}
+
+.editor-cell-dot {
+  display: block;
+  width: 55%;
+  height: 55%;
+  margin: 22% auto;
+  border-radius: 50%;
+  background: var(--tile-bg);
+  opacity: 0.45;
+}
+
+.editor-hint {
+  font-size: 0.8rem;
+}
+
+.editor-status {
+  margin: 0;
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.editor-status[data-variant='ok'] {
+  color: var(--win);
+}
+
+.editor-status[data-variant='error'] {
+  color: var(--danger);
+}
+
+.editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.editor-actions .btn {
+  flex: 1 1 calc(50% - 8px);
+}
+

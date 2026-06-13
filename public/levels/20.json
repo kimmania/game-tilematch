@@ -1,0 +1,68 @@
+{
+  "id": 20,
+  "name": "Jelly garden",
+  "rows": 8,
+  "cols": 8,
+  "moves": 22,
+  "colors": 4,
+  "seed": 3020,
+  "goals": [
+    {
+      "type": "score",
+      "target": 4200
+    },
+    {
+      "type": "jelly",
+      "target": 10
+    }
+  ],
+  "stars": [
+    4200,
+    6000,
+    8200
+  ],
+  "layout": {
+    "jelly": [
+      {
+        "row": 1,
+        "col": 3
+      },
+      {
+        "row": 1,
+        "col": 4
+      },
+      {
+        "row": 2,
+        "col": 3
+      },
+      {
+        "row": 2,
+        "col": 4
+      },
+      {
+        "row": 3,
+        "col": 3
+      },
+      {
+        "row": 3,
+        "col": 4
+      },
+      {
+        "row": 4,
+        "col": 3
+      },
+      {
+        "row": 4,
+        "col": 4
+      },
+      {
+        "row": 5,
+        "col": 3
+      },
+      {
+        "row": 5,
+        "col": 4
+      }
+    ]
+  }
+}

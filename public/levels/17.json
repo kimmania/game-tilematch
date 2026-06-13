@@ -1,0 +1,52 @@
+{
+  "id": 17,
+  "name": "Jelly stripe",
+  "rows": 8,
+  "cols": 8,
+  "moves": 20,
+  "colors": 4,
+  "seed": 3017,
+  "goals": [
+    {
+      "type": "score",
+      "target": 4000
+    },
+    {
+      "type": "jelly",
+      "target": 6
+    }
+  ],
+  "stars": [
+    4000,
+    5800,
+    8000
+  ],
+  "layout": {
+    "jelly": [
+      {
+        "row": 2,
+        "col": 3
+      },
+      {
+        "row": 3,
+        "col": 3
+      },
+      {
+        "row": 4,
+        "col": 3
+      },
+      {
+        "row": 5,
+        "col": 3
+      },
+      {
+        "row": 2,
+        "col": 4
+      },
+      {
+        "row": 3,
+        "col": 4
+      }
+    ]
+  }
+}

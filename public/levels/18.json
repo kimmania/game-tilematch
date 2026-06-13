@@ -1,0 +1,44 @@
+{
+  "id": 18,
+  "name": "Crate corner",
+  "rows": 8,
+  "cols": 8,
+  "moves": 19,
+  "colors": 5,
+  "seed": 3018,
+  "goals": [
+    {
+      "type": "score",
+      "target": 4800
+    }
+  ],
+  "stars": [
+    4800,
+    6800,
+    9200
+  ],
+  "layout": {
+    "crates": [
+      {
+        "row": 1,
+        "col": 1,
+        "layers": 1
+      },
+      {
+        "row": 1,
+        "col": 6,
+        "layers": 1
+      },
+      {
+        "row": 6,
+        "col": 1,
+        "layers": 2
+      },
+      {
+        "row": 6,
+        "col": 6,
+        "layers": 1
+      }
+    ]
+  }
+}

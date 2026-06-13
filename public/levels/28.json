@@ -1,0 +1,54 @@
+{
+  "id": 28,
+  "name": "Ice vault",
+  "rows": 8,
+  "cols": 8,
+  "moves": 17,
+  "colors": 5,
+  "seed": 3028,
+  "goals": [
+    {
+      "type": "score",
+      "target": 6000
+    }
+  ],
+  "stars": [
+    6000,
+    8600,
+    11500
+  ],
+  "layout": {
+    "ice": [
+      {
+        "row": 1,
+        "col": 3,
+        "layers": 1
+      },
+      {
+        "row": 1,
+        "col": 4,
+        "layers": 2
+      },
+      {
+        "row": 6,
+        "col": 3,
+        "layers": 2
+      },
+      {
+        "row": 6,
+        "col": 4,
+        "layers": 1
+      },
+      {
+        "row": 3,
+        "col": 1,
+        "layers": 1
+      },
+      {
+        "row": 4,
+        "col": 6,
+        "layers": 2
+      }
+    ]
+  }
+}

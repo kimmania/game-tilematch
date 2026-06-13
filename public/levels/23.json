@@ -1,0 +1,49 @@
+{
+  "id": 23,
+  "name": "Ice flurry",
+  "rows": 8,
+  "cols": 8,
+  "moves": 18,
+  "colors": 5,
+  "seed": 3023,
+  "goals": [
+    {
+      "type": "score",
+      "target": 5200
+    }
+  ],
+  "stars": [
+    5200,
+    7400,
+    10000
+  ],
+  "layout": {
+    "ice": [
+      {
+        "row": 2,
+        "col": 2,
+        "layers": 1
+      },
+      {
+        "row": 2,
+        "col": 5,
+        "layers": 2
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "layers": 2
+      },
+      {
+        "row": 5,
+        "col": 5,
+        "layers": 1
+      },
+      {
+        "row": 3,
+        "col": 3,
+        "layers": 1
+      }
+    ]
+  }
+}

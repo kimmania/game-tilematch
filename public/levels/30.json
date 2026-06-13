@@ -1,0 +1,92 @@
+{
+  "id": 30,
+  "name": "Crown challenge",
+  "rows": 8,
+  "cols": 8,
+  "moves": 14,
+  "colors": 5,
+  "seed": 3030,
+  "goals": [
+    {
+      "type": "score",
+      "target": 7000
+    },
+    {
+      "type": "jelly",
+      "target": 10
+    }
+  ],
+  "stars": [
+    7000,
+    10000,
+    13500
+  ],
+  "layout": {
+    "jelly": [
+      {
+        "row": 1,
+        "col": 3
+      },
+      {
+        "row": 1,
+        "col": 4
+      },
+      {
+        "row": 2,
+        "col": 3
+      },
+      {
+        "row": 2,
+        "col": 4
+      },
+      {
+        "row": 5,
+        "col": 3
+      },
+      {
+        "row": 5,
+        "col": 4
+      },
+      {
+        "row": 6,
+        "col": 3
+      },
+      {
+        "row": 6,
+        "col": 4
+      },
+      {
+        "row": 3,
+        "col": 2
+      },
+      {
+        "row": 4,
+        "col": 5
+      }
+    ],
+    "crates": [
+      {
+        "row": 3,
+        "col": 3,
+        "layers": 2
+      },
+      {
+        "row": 4,
+        "col": 4,
+        "layers": 2
+      }
+    ],
+    "ice": [
+      {
+        "row": 2,
+        "col": 5,
+        "layers": 2
+      },
+      {
+        "row": 5,
+        "col": 2,
+        "layers": 2
+      }
+    ]
+  }
+}

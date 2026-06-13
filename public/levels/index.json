@@ -59,6 +59,66 @@
     {
       "id": 15,
       "name": "Royal mix"
+    },
+    {
+      "id": 16,
+      "name": "Score climb"
+    },
+    {
+      "id": 17,
+      "name": "Jelly stripe"
+    },
+    {
+      "id": 18,
+      "name": "Crate corner"
+    },
+    {
+      "id": 19,
+      "name": "Ice line"
+    },
+    {
+      "id": 20,
+      "name": "Jelly garden"
+    },
+    {
+      "id": 21,
+      "name": "Score sprint"
+    },
+    {
+      "id": 22,
+      "name": "Crate wall"
+    },
+    {
+      "id": 23,
+      "name": "Ice flurry"
+    },
+    {
+      "id": 24,
+      "name": "Mixed lane"
+    },
+    {
+      "id": 25,
+      "name": "Rising gate"
+    },
+    {
+      "id": 26,
+      "name": "Master jelly"
+    },
+    {
+      "id": 27,
+      "name": "Crate fortress"
+    },
+    {
+      "id": 28,
+      "name": "Ice vault"
+    },
+    {
+      "id": 29,
+      "name": "Royal scramble"
+    },
+    {
+      "id": 30,
+      "name": "Crown challenge"
     }
   ],
   "chapters": [
@@ -85,6 +145,31 @@
         13,
         14,
         15
+      ]
+    },
+    {
+      "name": "Rising challenge",
+      "levelIds": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    },
+    {
+      "name": "Master boards",
+      "levelIds": [
+        26,
+        27,
+        28,
+        29,
+        30
       ]
     }
   ]

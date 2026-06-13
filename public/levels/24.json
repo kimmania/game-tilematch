@@ -1,0 +1,66 @@
+{
+  "id": 24,
+  "name": "Mixed lane",
+  "rows": 8,
+  "cols": 8,
+  "moves": 18,
+  "colors": 5,
+  "seed": 3024,
+  "goals": [
+    {
+      "type": "score",
+      "target": 5500
+    },
+    {
+      "type": "jelly",
+      "target": 6
+    }
+  ],
+  "stars": [
+    5500,
+    7800,
+    10500
+  ],
+  "layout": {
+    "jelly": [
+      {
+        "row": 6,
+        "col": 2
+      },
+      {
+        "row": 6,
+        "col": 3
+      },
+      {
+        "row": 6,
+        "col": 4
+      },
+      {
+        "row": 6,
+        "col": 5
+      },
+      {
+        "row": 7,
+        "col": 3
+      },
+      {
+        "row": 7,
+        "col": 4
+      }
+    ],
+    "crates": [
+      {
+        "row": 3,
+        "col": 3,
+        "layers": 1
+      }
+    ],
+    "ice": [
+      {
+        "row": 2,
+        "col": 5,
+        "layers": 1
+      }
+    ]
+  }
+}

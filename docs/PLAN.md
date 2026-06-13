@@ -43,11 +43,11 @@ A mobile-first match-3 PWA deployed to GitHub Pages. Swap adjacent tiles, create
 - Combo rules when swapping two specials
 - Tutorial levels 11–15 in chapter “New mechanics”
 
-### M3 — Level editor + content pack
+### M3 — Level editor + content pack ✅
 
 - In-browser editor (`?edit=1`)
 - JSON schema validation + level preview script
-- 30+ hand-tuned levels across 2 chapters
+- 30 hand-tuned levels across 4 chapters
 - Star ratings persisted per level
 
 ### M4 — Objectives + polish
