@@ -1,16 +1,25 @@
-import type { CollectibleKind, Coord, GameState } from '../core/types';
+import type { CascadeStep, CollectibleKind, Coord, GameState } from '../core/types';
 import { specialLabel } from '../core/tile';
 import { TILE_CSS } from '../core/tileColors';
+import { createTileElement, playCascadeAnimations } from './boardAnimations';
 
 export type GridBoardOptions = {
   reduceMotion?: boolean;
   onSwapAttempt: (a: Coord, b: Coord) => void;
 };
 
+export type CascadePlaybackOptions = {
+  beforeSwap: GameState;
+  visualStart: GameState;
+  steps: CascadeStep[];
+  swap?: { a: Coord; b: Coord };
+};
+
 export type GridBoard = {
   render: (state: GameState, selected?: Coord | null) => void;
   setBusy: (busy: boolean) => void;
   flashInvalidSwap: (a: Coord, b: Coord) => void;
+  playCascade: (options: CascadePlaybackOptions) => Promise<void>;
   destroy: () => void;
 };
 
@@ -44,6 +53,7 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
 
   const root = document.createElement('div');
   root.className = 'grid-board';
+  host.classList.add('board-frame');
   host.replaceChildren(root);
 
   function renderBoard(current: GameState, sel: Coord | null = selected): void {
@@ -75,15 +85,7 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
           crate.setAttribute('aria-hidden', 'true');
           cell.appendChild(crate);
         } else if (slot.tile) {
-          const gem = document.createElement('span');
-          gem.className = `tile tile-${slot.tile.color}`;
-          if (slot.tile.special) {
-            gem.classList.add(`special-${slot.tile.special}`);
-          }
-          gem.style.setProperty('--tile-bg', TILE_CSS[slot.tile.color].bg);
-          gem.style.setProperty('--tile-edge', TILE_CSS[slot.tile.color].edge);
-          gem.setAttribute('aria-hidden', 'true');
-          cell.appendChild(gem);
+          cell.appendChild(createTileElement(slot.tile));
         }
 
         if (slot.iceLayers > 0) {
@@ -148,6 +150,7 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
     render: (next, sel) => renderBoard(next, sel ?? null),
     setBusy: (value) => {
       busy = value;
+      root.classList.toggle('board-busy', value);
       if (state) renderBoard(state, selected);
     },
     flashInvalidSwap: (a, b) => {
@@ -158,6 +161,20 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
         el?.classList.add('invalid-swap');
         window.setTimeout(() => el?.classList.remove('invalid-swap'), 280);
       }
+    },
+    playCascade: async (playback) => {
+      if (options.reduceMotion) {
+        renderBoard(playback.steps.at(-1)?.after ?? playback.visualStart);
+        return;
+      }
+      await playCascadeAnimations({
+        root,
+        beforeSwap: playback.beforeSwap,
+        visualStart: playback.visualStart,
+        steps: playback.steps,
+        swap: playback.swap,
+        render: (next) => renderBoard(next, null),
+      });
     },
     destroy: () => {
       host.replaceChildren();

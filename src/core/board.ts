@@ -35,8 +35,11 @@ import type {
   Grid,
   LevelDef,
   LevelGoal,
+  SettleFrame,
   SwapResult,
+  Tile,
   TileColor,
+  TileSpawn,
 } from './types';
 import { emptyCollectibleCounts } from './types';
 import {
@@ -98,17 +101,6 @@ function shuffleGridColors(grid: Grid, palette: TileColor[], rng: SeededRng): vo
   }
 }
 
-function refillGrid(grid: Grid, palette: TileColor[], rng: SeededRng): void {
-  for (let row = 0; row < grid.length; row += 1) {
-    for (let col = 0; col < grid[0]!.length; col += 1) {
-      const cell = grid[row]![col]!;
-      if (cell.tile === null && cell.crateLayers === 0) {
-        cell.tile = makeTile(rng.pick(palette));
-      }
-    }
-  }
-}
-
 function mergeCoords(...lists: Coord[][]): Coord[] {
   const map = new Map<string, Coord>();
   for (const list of lists) {
@@ -128,12 +120,58 @@ function settleDrops(state: GameState): void {
   mergeCounts(state.progress.dropped, collectExitedDrops(state.grid));
 }
 
+function findTilePosition(grid: Grid, tile: Tile): Coord | null {
+  for (let row = 0; row < grid.length; row += 1) {
+    for (let col = 0; col < grid[0]!.length; col += 1) {
+      if (grid[row]![col]!.tile === tile) return { row, col };
+    }
+  }
+  return null;
+}
+
+function captureTilePositions(grid: Grid): Map<Tile, Coord> {
+  const map = new Map<Tile, Coord>();
+  for (let row = 0; row < grid.length; row += 1) {
+    for (let col = 0; col < grid[0]!.length; col += 1) {
+      const tile = grid[row]![col]!.tile;
+      if (tile) map.set(tile, { row, col });
+    }
+  }
+  return map;
+}
+
 /** After tiles clear: drops fall through gaps first, then tiles, then drops again. */
-function settleBoardAfterClear(state: GameState, rng: SeededRng): void {
+function settleBoardAfterClear(state: GameState, rng: SeededRng): SettleFrame {
+  const beforeTiles = captureTilePositions(state.grid);
+
   applyDropGravity(state.grid);
   applyGravity(state.grid);
   settleDrops(state);
-  refillGrid(state.grid, state.palette, rng);
+
+  const falls = [...beforeTiles.entries()]
+    .map(([tile, from]) => {
+      const to = findTilePosition(state.grid, tile);
+      if (!to || (to.row === from.row && to.col === from.col)) return null;
+      return { from, to };
+    })
+    .filter((entry): entry is NonNullable<typeof entry> => entry != null);
+
+  const spawns: TileSpawn[] = [];
+  const colSpawnCount = new Map<number, number>();
+
+  for (let row = 0; row < state.grid.length; row += 1) {
+    for (let col = 0; col < state.grid[0]!.length; col += 1) {
+      const cell = state.grid[row]![col]!;
+      if (cell.tile !== null || cell.crateLayers > 0) continue;
+
+      const offset = colSpawnCount.get(col) ?? 0;
+      colSpawnCount.set(col, offset + 1);
+      cell.tile = makeTile(rng.pick(state.palette));
+      spawns.push({ to: { row, col }, fromRow: -1 - offset });
+    }
+  }
+
+  return { falls, spawns };
 }
 
 function damageNeighbors(grid: Grid, hitCells: Coord[]): void {
@@ -215,7 +253,7 @@ function runCascadeStep(
     state.grid[spawn.coord.row]![spawn.coord.col]!.tile = makeTile(spawn.color, spawn.special);
   }
 
-  settleBoardAfterClear(state, rng);
+  const settle = settleBoardAfterClear(state, rng);
 
   return {
     matches,
@@ -224,6 +262,8 @@ function runCascadeStep(
     activated: clearResult.activated.length > 0 ? clearResult.activated : undefined,
     points,
     combo,
+    settle,
+    after: cloneGameState(state),
   };
 }
 
@@ -260,7 +300,7 @@ function runSpecialCombo(
   const points = scoreForStep(clearResult.clearedTiles.length, 1);
   state.score += points;
 
-  settleBoardAfterClear(state, rng);
+  const settle = settleBoardAfterClear(state, rng);
 
   const step: CascadeStep = {
     matches: [],
@@ -268,6 +308,8 @@ function runSpecialCombo(
     activated: [specialA, specialB],
     points,
     combo: 1,
+    settle,
+    after: cloneGameState(state),
   };
 
   return [step, ...runCascade(state, rng)];
@@ -417,6 +459,7 @@ export function trySwap(state: GameState, a: Coord, b: Coord): SwapResult {
   }
 
   next.movesLeft -= 1;
+  const visualStart = cloneGameState(next);
   const rng = SeededRng.fromState(next.rngState);
 
   const steps = combo
@@ -425,7 +468,7 @@ export function trySwap(state: GameState, a: Coord, b: Coord): SwapResult {
 
   next.status = resolveStatus(next);
 
-  return { ok: true, state: next, steps };
+  return { ok: true, state: next, steps, visualStart, swapped: !combo };
 }
 
 export function statusLabel(status: GameStatus): string {

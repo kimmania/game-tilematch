@@ -103,6 +103,21 @@ export type MatchGroup = {
   length: number;
 };
 
+export type TileFall = {
+  from: Coord;
+  to: Coord;
+};
+
+export type TileSpawn = {
+  to: Coord;
+  fromRow: number;
+};
+
+export type SettleFrame = {
+  falls: TileFall[];
+  spawns: TileSpawn[];
+};
+
 export type CascadeStep = {
   matches: MatchGroup[];
   cleared: Coord[];
@@ -110,6 +125,8 @@ export type CascadeStep = {
   activated?: SpecialKind[];
   points: number;
   combo: number;
+  settle: SettleFrame;
+  after: GameState;
 };
 
 export type SwapFailureReason =
@@ -121,7 +138,7 @@ export type SwapFailureReason =
 
 export type SwapResult =
   | { ok: false; reason: SwapFailureReason }
-  | { ok: true; state: GameState; steps: CascadeStep[] };
+  | { ok: true; state: GameState; steps: CascadeStep[]; visualStart: GameState; swapped: boolean };
 
 export type SpecialSpawn = {
   coord: Coord;

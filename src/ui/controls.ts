@@ -20,16 +20,23 @@ export function updateHeader(levelName: string, levelId: number, total: number):
   if (meta) meta.textContent = `Level ${levelId} of ${total}`;
 }
 
-export function showWinPanel(show: boolean, message = 'Level cleared!'): void {
+export function showWinPanel(
+  show: boolean,
+  message = 'Level cleared!',
+  variant: 'won' | 'lost' = 'won',
+): void {
   const panel = document.getElementById('win-panel');
   const banner = document.getElementById('win-banner');
-  if (panel) panel.classList.toggle('hidden', !show);
+  if (panel) {
+    panel.classList.toggle('hidden', !show);
+    panel.setAttribute('data-variant', variant);
+  }
   if (banner) banner.textContent = message;
 }
 
 export function setMovesLeft(moves: number): void {
   const el = document.getElementById('move-counter');
-  if (el) el.textContent = `Moves left: ${moves}`;
+  if (el) el.textContent = String(moves);
 }
 
 export function setGoalsHud(text: string): void {

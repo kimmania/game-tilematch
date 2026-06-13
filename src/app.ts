@@ -180,9 +180,9 @@ export class TileMatchApp {
 
     if (this.state.status === 'won') {
       const stars = starsEarned(this.state);
-      showWinPanel(true, `Level cleared! ${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}`);
+      showWinPanel(true, `Level cleared! ${'★'.repeat(stars)}${'☆'.repeat(3 - stars)}`, 'won');
     } else if (this.state.status === 'lost') {
-      showWinPanel(true, 'Out of moves — try again!');
+      showWinPanel(true, 'Out of moves — try again!', 'lost');
     } else {
       showWinPanel(false);
     }
@@ -190,7 +190,7 @@ export class TileMatchApp {
     this.board.render(this.state);
   }
 
-  private handleSwap(a: Coord, b: Coord): void {
+  private async handleSwap(a: Coord, b: Coord): Promise<void> {
     if (!this.state || this.busy || this.state.status !== 'playing') return;
 
     playSound('tap');
@@ -198,6 +198,7 @@ export class TileMatchApp {
     this.busy = true;
     this.board.setBusy(true);
 
+    const beforeSwap = this.state;
     const result = trySwap(this.state, a, b);
 
     if (!result.ok) {
@@ -216,6 +217,13 @@ export class TileMatchApp {
       playSound('match');
       pulseHaptic([6, 30, 6]);
     }
+
+    await this.board.playCascade({
+      beforeSwap,
+      visualStart: result.visualStart,
+      steps: result.steps,
+      swap: result.swapped ? { a, b } : undefined,
+    });
 
     this.state = result.state;
     saveSession(this.levelDef!.id, this.state);
