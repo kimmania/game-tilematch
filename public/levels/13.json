@@ -1,0 +1,30 @@
+{
+  "id": 13,
+  "name": "Jelly hall",
+  "rows": 8,
+  "cols": 8,
+  "moves": 22,
+  "colors": 4,
+  "seed": 2013,
+  "goals": [
+    { "type": "score", "target": 3000 },
+    { "type": "jelly", "target": 12 }
+  ],
+  "stars": [3000, 4500, 6500],
+  "layout": {
+    "jelly": [
+      { "row": 2, "col": 2 },
+      { "row": 2, "col": 3 },
+      { "row": 2, "col": 4 },
+      { "row": 2, "col": 5 },
+      { "row": 3, "col": 2 },
+      { "row": 3, "col": 3 },
+      { "row": 3, "col": 4 },
+      { "row": 3, "col": 5 },
+      { "row": 4, "col": 2 },
+      { "row": 4, "col": 3 },
+      { "row": 4, "col": 4 },
+      { "row": 4, "col": 5 }
+    ]
+  }
+}

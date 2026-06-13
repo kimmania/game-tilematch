@@ -39,6 +39,26 @@
     {
       "id": 10,
       "name": "Royal finale"
+    },
+    {
+      "id": 11,
+      "name": "Rocket rise"
+    },
+    {
+      "id": 12,
+      "name": "Blast chamber"
+    },
+    {
+      "id": 13,
+      "name": "Jelly hall"
+    },
+    {
+      "id": 14,
+      "name": "Frozen crates"
+    },
+    {
+      "id": 15,
+      "name": "Royal mix"
     }
   ],
   "chapters": [
@@ -55,6 +75,16 @@
         8,
         9,
         10
+      ]
+    },
+    {
+      "name": "New mechanics",
+      "levelIds": [
+        11,
+        12,
+        13,
+        14,
+        15
       ]
     }
   ]

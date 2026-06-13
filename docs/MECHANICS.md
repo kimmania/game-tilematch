@@ -3,17 +3,17 @@
 ## Core rules (M1)
 
 1. **Swap** two orthogonally adjacent tiles.
-2. Swap is **valid** only if it creates at least one line of **3+ matching colors**.
+2. Swap is **valid** if it creates a match **or** swaps two **special** tiles together.
 3. Invalid swaps **revert** (no move consumed).
 4. Valid swaps **consume one move** and trigger a **cascade**:
-   - Find all matches (horizontal and vertical lines of 3+)
+   - Find all matches (horizontal, vertical lines of 3+, and 2×2 squares)
    - Clear matched tiles and award score
-   - Tiles **fall** down within each column
+   - Tiles **fall** down within each column (crates split columns into segments)
    - Empty cells at the top are **refilled** with new random colors (seeded RNG)
    - Repeat until no matches remain
-5. **Win** when the score goal is reached before moves run out.
-6. **Lose** when moves reach 0 without meeting the goal.
-7. **Stars**: 1★ = goal score, 2★/3★ = higher score thresholds from level JSON.
+5. **Win** when all goals are met before moves run out.
+6. **Lose** when moves reach 0 without meeting every goal.
+7. **Stars**: 1★ = score goal, 2★/3★ = higher score thresholds from level JSON.
 
 ## Scoring
 
@@ -24,14 +24,43 @@
 | Cascade combo 2 | ×1.5 |
 | Cascade combo 3+ | ×2 |
 
-## Colors
+## Special tiles (M2)
 
-Up to 5 tile colors per level (`colors` field). Fewer colors = easier matching.
+| Created by | Special | Effect when matched or combo-swapped |
+|------------|---------|--------------------------------------|
+| 4 in a row | **Rocket ↔** | Clears entire row |
+| 4 in a column | **Rocket ↕** | Clears entire column |
+| 5 in a line or L/T | **Bomb** | Clears 3×3 area |
+| 2×2 square | **Propeller** | Flies to a priority target (jelly → crate → ice → tile) |
+
+### Special combos (swap two adjacent specials)
+
+| Combo | Effect |
+|-------|--------|
+| Rocket + Rocket | Cross blast (both row and column at each position) |
+| Bomb + Bomb | 5×5 blast centered on first tile |
+| Rocket + Bomb | Cross + bombs at both tiles |
+| Propeller + anything | Large blast at both tiles + propeller targeting |
+
+## Blockers (M2)
+
+| Blocker | Behavior |
+|---------|----------|
+| **Jelly** | Background on a cell; cleared when that cell is hit by a match or special |
+| **Crate** | Blocks the cell (no tile). Match **adjacent** to a crate removes one layer |
+| **Ice** | Freezes the tile (cannot swap until ice is gone). Each direct or **adjacent** match/special hit removes one layer; when the last layer breaks, the tile clears in the same wave |
+
+## Goals (M2)
+
+| Goal | Win condition |
+|------|---------------|
+| **Score** | Reach target score (required on every level) |
+| **Jelly** | Clear target number of jelly cells |
 
 ## RNG
 
 Each level has a `seed`. Initial board fill and refills use a deterministic PRNG so sessions can be saved and resumed.
 
-## Planned (M2+)
+## Planned (M3+)
 
-See `docs/PLAN.md` for rockets, bombs, propellers, crates, ice, jelly, and collection goals.
+See `docs/PLAN.md` for level editor, collection goals, and polish.

@@ -1,0 +1,11 @@
+{
+  "id": 11,
+  "name": "Rocket rise",
+  "rows": 7,
+  "cols": 7,
+  "moves": 22,
+  "colors": 4,
+  "seed": 2011,
+  "goals": [{ "type": "score", "target": 3500 }],
+  "stars": [3500, 5200, 7500]
+}

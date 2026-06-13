@@ -1,0 +1,38 @@
+{
+  "id": 15,
+  "name": "Royal mix",
+  "rows": 8,
+  "cols": 8,
+  "moves": 18,
+  "colors": 5,
+  "seed": 2015,
+  "goals": [
+    { "type": "score", "target": 5500 },
+    { "type": "jelly", "target": 10 }
+  ],
+  "stars": [5500, 7800, 10500],
+  "layout": {
+    "jelly": [
+      { "row": 0, "col": 3 },
+      { "row": 0, "col": 4 },
+      { "row": 1, "col": 3 },
+      { "row": 1, "col": 4 },
+      { "row": 2, "col": 3 },
+      { "row": 2, "col": 4 },
+      { "row": 6, "col": 3 },
+      { "row": 6, "col": 4 },
+      { "row": 7, "col": 3 },
+      { "row": 7, "col": 4 }
+    ],
+    "crates": [
+      { "row": 3, "col": 2, "layers": 2 },
+      { "row": 3, "col": 5, "layers": 1 },
+      { "row": 4, "col": 3, "layers": 1 },
+      { "row": 4, "col": 4, "layers": 1 }
+    ],
+    "ice": [
+      { "row": 5, "col": 1, "layers": 1 },
+      { "row": 5, "col": 6, "layers": 1 }
+    ]
+  }
+}

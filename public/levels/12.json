@@ -1,0 +1,11 @@
+{
+  "id": 12,
+  "name": "Blast chamber",
+  "rows": 8,
+  "cols": 8,
+  "moves": 20,
+  "colors": 4,
+  "seed": 2012,
+  "goals": [{ "type": "score", "target": 4000 }],
+  "stars": [4000, 6000, 8500]
+}

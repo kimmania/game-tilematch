@@ -1,4 +1,5 @@
 import type { Coord, GameState } from '../core/types';
+import { specialLabel } from '../core/tile';
 import { TILE_CSS } from '../core/tileColors';
 
 export type GridBoardOptions = {
@@ -12,6 +13,22 @@ export type GridBoard = {
   flashInvalidSwap: (a: Coord, b: Coord) => void;
   destroy: () => void;
 };
+
+function cellLabel(state: GameState, row: number, col: number): string {
+  const cell = state.grid[row]![col]!;
+  const parts: string[] = [];
+
+  if (cell.jelly) parts.push('jelly');
+  if (cell.crateLayers > 0) parts.push(`crate ${cell.crateLayers} layers`);
+  if (cell.iceLayers > 0) parts.push(`ice ${cell.iceLayers} layers`);
+
+  if (cell.tile) {
+    const color = TILE_CSS[cell.tile.color].label;
+    parts.push(cell.tile.special ? `${specialLabel(cell.tile.special)} (${color})` : color);
+  }
+
+  return parts.length > 0 ? parts.join(', ') : 'Empty cell';
+}
 
 export function createGridBoard(host: HTMLElement, options: GridBoardOptions): GridBoard {
   let selected: Coord | null = null;
@@ -36,23 +53,43 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
         cell.dataset.row = String(row);
         cell.dataset.col = String(col);
 
+        const slot = current.grid[row]![col]!;
         const isSelected = sel?.row === row && sel?.col === col;
         if (isSelected) cell.classList.add('selected');
+        if (slot.jelly) cell.classList.add('has-jelly');
+        if (slot.crateLayers > 0) cell.classList.add('has-crate');
+        if (slot.iceLayers > 0) cell.classList.add('has-ice');
 
-        const tile = current.grid[row]![col]!.tile;
-        if (tile) {
+        if (slot.crateLayers > 0) {
+          const crate = document.createElement('span');
+          crate.className = 'blocker crate';
+          crate.textContent = slot.crateLayers > 1 ? '2' : '';
+          crate.setAttribute('aria-hidden', 'true');
+          cell.appendChild(crate);
+        } else if (slot.tile) {
           const gem = document.createElement('span');
-          gem.className = `tile tile-${tile}`;
-          gem.style.setProperty('--tile-bg', TILE_CSS[tile].bg);
-          gem.style.setProperty('--tile-edge', TILE_CSS[tile].edge);
+          gem.className = `tile tile-${slot.tile.color}`;
+          if (slot.tile.special) {
+            gem.classList.add(`special-${slot.tile.special}`);
+          }
+          gem.style.setProperty('--tile-bg', TILE_CSS[slot.tile.color].bg);
+          gem.style.setProperty('--tile-edge', TILE_CSS[slot.tile.color].edge);
           gem.setAttribute('aria-hidden', 'true');
           cell.appendChild(gem);
-          cell.setAttribute('aria-label', `${TILE_CSS[tile].label} tile`);
-        } else {
-          cell.setAttribute('aria-label', 'Empty cell');
         }
 
-        cell.disabled = busy || current.status !== 'playing';
+        if (slot.iceLayers > 0) {
+          const ice = document.createElement('span');
+          ice.className = 'blocker ice';
+          ice.textContent = String(slot.iceLayers);
+          ice.setAttribute('aria-hidden', 'true');
+          cell.appendChild(ice);
+        }
+
+        cell.setAttribute('aria-label', cellLabel(current, row, col));
+
+        const canTap = slot.crateLayers === 0 && slot.tile && slot.iceLayers === 0;
+        cell.disabled = busy || current.status !== 'playing' || !canTap;
         cell.addEventListener('click', () => handleCellTap(row, col));
         root.appendChild(cell);
       }
@@ -61,7 +98,8 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
 
   function handleCellTap(row: number, col: number): void {
     if (busy || !state || state.status !== 'playing') return;
-    if (!state.grid[row]![col]!.tile) return;
+    const slot = state.grid[row]![col]!;
+    if (slot.crateLayers > 0 || !slot.tile || slot.iceLayers > 0) return;
 
     const tapped: Coord = { row, col };
 

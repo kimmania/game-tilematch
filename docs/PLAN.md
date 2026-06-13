@@ -35,13 +35,13 @@ A mobile-first match-3 PWA deployed to GitHub Pages. Swap adjacent tiles, create
 - Level picker, unlock progress, session resume
 - Unit tests for match engine and RNG
 
-### M2 — Special tiles + blockers
+### M2 — Special tiles + blockers ✅
 
-- **Rocket** (4 in a row/col), **Bomb** (L/T match), **Propeller** (Royal Match variant)
+- **Rocket** (4 in a row/col), **Bomb** (5-line or L/T), **Propeller** (2×2 square)
 - **Crate** and **Ice** blockers (1–2 layers)
 - **Jelly** under-tile clear objective
 - Combo rules when swapping two specials
-- Tutorial levels 11–15
+- Tutorial levels 11–15 in chapter “New mechanics”
 
 ### M3 — Level editor + content pack
 
@@ -64,19 +64,27 @@ A mobile-first match-3 PWA deployed to GitHub Pages. Swap adjacent tiles, create
 - Pre-level boosters (optional, no IAP)
 - Daily seeded challenge level
 
-## Level JSON schema (M1)
+## Level JSON schema
 
 ```json
 {
-  "id": 1,
-  "name": "First swap",
-  "rows": 7,
-  "cols": 7,
-  "moves": 20,
+  "id": 13,
+  "name": "Jelly hall",
+  "rows": 8,
+  "cols": 8,
+  "moves": 22,
   "colors": 4,
-  "seed": 1001,
-  "goals": [{ "type": "score", "target": 1500 }],
-  "stars": [1500, 2500, 4000]
+  "seed": 2013,
+  "goals": [
+    { "type": "score", "target": 3000 },
+    { "type": "jelly", "target": 12 }
+  ],
+  "stars": [3000, 4500, 6500],
+  "layout": {
+    "jelly": [{ "row": 2, "col": 2 }],
+    "crates": [{ "row": 3, "col": 3, "layers": 1 }],
+    "ice": [{ "row": 5, "col": 2, "layers": 2 }]
+  }
 }
 ```
 

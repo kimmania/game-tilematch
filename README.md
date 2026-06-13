@@ -6,9 +6,10 @@ A mobile-first match-3 PWA in the Royal Match–lite style. Swap adjacent tiles,
 
 1. **Tap a tile** to select it.
 2. **Tap an adjacent tile** to swap.
-3. Swaps only count when they create a **match of 3 or more**.
+3. Swaps count when they create a **match of 3 or more**, a **2×2 square**, or swap two **special tiles**.
 4. Matched tiles clear, new tiles fall in, and **cascades** chain for bonus score.
-5. **Win** by reaching the score goal. Earn up to **3 stars** for higher scores.
+5. **Match 4** for a rocket, **5/L-shape** for a bomb, **2×2** for a propeller.
+6. **Win** by reaching all goals (score and/or jelly). Earn up to **3 stars** for higher scores.
 
 See `docs/MECHANICS.md` for scoring rules and `docs/PLAN.md` for the milestone roadmap.
 

@@ -1,6 +1,6 @@
 import {
   createGameState,
-  scoreGoalTarget,
+  formatGoals,
   starsEarned,
   statusLabel,
   trySwap,
@@ -23,11 +23,11 @@ import {
 import {
   bindControls,
   setContinueBanner,
+  setGoalsHud,
   setHint,
   setMovesLeft,
   setNextEnabled,
   setPrevEnabled,
-  setScoreHud,
   setStarsHud,
   setStatusChip,
   showWinPanel,
@@ -35,6 +35,14 @@ import {
 } from './ui/controls';
 import { createGridBoard } from './ui/gridBoard';
 import { closeLevelPicker, isLevelPickerOpen, openLevelPicker } from './ui/levelPicker';
+
+const HINTS: Record<number, string> = {
+  11: 'Match 4 in a row to create a rocket. Tap two adjacent tiles to swap.',
+  12: 'Match 5 or an L-shape to create a bomb. Swap two specials for a combo.',
+  13: 'Match a 2×2 square to create a propeller. Clear all jelly tiles.',
+  14: 'Match next to crates to break them. Chip ice before the tile can move.',
+  15: 'Use rockets, bombs, and propellers together to clear jelly and crates.',
+};
 
 export class TileMatchApp {
   private state: GameState | null = null;
@@ -103,6 +111,8 @@ export class TileMatchApp {
           rngState: session.rngState,
           goals: session.goals,
           stars: session.stars,
+          progress: session.progress,
+          totalJelly: session.totalJelly,
         };
       } else {
         this.state = createGameState(level);
@@ -119,15 +129,14 @@ export class TileMatchApp {
   private refreshUi(): void {
     if (!this.state || !this.levelDef) return;
 
-    const target = scoreGoalTarget(this.state);
     updateHeader(this.levelDef.name, this.levelDef.id, this.levelIds.length);
     setMovesLeft(this.state.movesLeft);
-    setScoreHud(this.state.score, target);
+    setGoalsHud(formatGoals(this.state));
     setStarsHud(this.state.stars, this.state.score);
     setStatusChip(statusLabel(this.state.status), this.state.status);
     setPrevEnabled(this.levelDef.id > 1);
     setNextEnabled(this.state.status === 'won' && this.levelDef.id < this.levelIds.at(-1)!);
-    setHint('Tap a tile, then tap an adjacent tile to swap and match 3+.');
+    setHint(HINTS[this.levelDef.id] ?? 'Tap a tile, then tap an adjacent tile to swap and match 3+.');
     setContinueBanner(null);
 
     if (this.state.status === 'won') {

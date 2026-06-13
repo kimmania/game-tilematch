@@ -37,7 +37,14 @@ export function saveProgress(progress: SavedProgress): void {
 
 export type SessionSnapshot = Pick<
   GameState,
-  'grid' | 'movesLeft' | 'score' | 'status' | 'rngState' | 'palette'
+  | 'grid'
+  | 'movesLeft'
+  | 'score'
+  | 'status'
+  | 'rngState'
+  | 'palette'
+  | 'progress'
+  | 'totalJelly'
 > & {
   rows: number;
   cols: number;
@@ -58,6 +65,8 @@ export function saveSession(levelId: number, state: GameState): void {
     rngState: state.rngState,
     goals: state.goals,
     stars: state.stars,
+    progress: state.progress,
+    totalJelly: state.totalJelly,
   };
   localStorage.setItem(key, JSON.stringify(snapshot));
 }

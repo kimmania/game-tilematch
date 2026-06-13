@@ -30,9 +30,9 @@ export function setMovesLeft(moves: number): void {
   if (el) el.textContent = `Moves left: ${moves}`;
 }
 
-export function setScoreHud(score: number, target: number): void {
+export function setGoalsHud(text: string): void {
   const el = document.getElementById('score-counter');
-  if (el) el.textContent = `Score: ${score.toLocaleString()} / ${target.toLocaleString()}`;
+  if (el) el.textContent = text;
 }
 
 export function setStarsHud(thresholds: [number, number, number], score: number): void {
