@@ -1,6 +1,6 @@
 export type TileColor = 'ruby' | 'sapphire' | 'emerald' | 'amber' | 'amethyst';
 
-export type SpecialKind = 'rocket-h' | 'rocket-v' | 'bomb' | 'propeller';
+export type SpecialKind = 'rocket-h' | 'rocket-v' | 'bomb' | 'color-bomb' | 'propeller';
 
 export type Tile = {
   color: TileColor;
@@ -23,6 +23,8 @@ export type Cell = {
   collectible: CollectibleKind | null;
   /** Falling item — drops with gravity and exits at the bottom row. */
   drop: CollectibleKind | null;
+  /** Spreadable grass/carpet — grows when matches touch it. */
+  grass: boolean;
 };
 
 export type Grid = Cell[][];
@@ -31,7 +33,8 @@ export type ScoreGoal = { type: 'score'; target: number };
 export type JellyGoal = { type: 'jelly'; target: number };
 export type CollectGoal = { type: 'collect'; target: number; item: CollectibleKind };
 export type DropGoal = { type: 'drop'; target: number; item: CollectibleKind };
-export type LevelGoal = ScoreGoal | JellyGoal | CollectGoal | DropGoal;
+export type GrassGoal = { type: 'grass'; target: number };
+export type LevelGoal = ScoreGoal | JellyGoal | CollectGoal | DropGoal | GrassGoal;
 
 export type CrateDef = { row: number; col: number; layers: number };
 export type IceDef = { row: number; col: number; layers: number };
@@ -44,6 +47,10 @@ export type LevelLayout = {
   ice?: IceDef[];
   collect?: CollectDef[];
   drops?: DropDef[];
+  /** Cells that must have grass spread onto them by end of level. */
+  grass?: Coord[];
+  /** Cells that start with grass (carpet seeds). */
+  grassSeeds?: Coord[];
 };
 
 export type LevelDef = {
@@ -88,6 +95,7 @@ export type GameState = {
   stars: [number, number, number];
   progress: GoalProgress;
   totalJelly: number;
+  grassTargets: Coord[];
 };
 
 export type MatchGroup = {

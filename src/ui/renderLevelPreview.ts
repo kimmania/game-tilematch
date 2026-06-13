@@ -37,6 +37,7 @@ export function renderLevelPreviewSvg(state: GameState, options: LevelPreviewOpt
       const cell = state.grid[row]![col]!;
 
       let fill = '#354c68';
+      if (cell.grass) fill = '#2d5a48';
       if (cell.jelly) fill = '#5a4520';
       if (cell.crateLayers > 0) fill = '#5c3d28';
 

@@ -58,10 +58,14 @@ A mobile-first match-3 PWA deployed to GitHub Pages. Swap adjacent tiles, create
 - Tutorial overlays per mechanic
 - Levels 31–32 in chapter “Objectives”
 
-### M5 — Advanced mechanics (stretch)
+### M5 — Advanced mechanics (partial) ✅
 
 - Grass/carpet spread objective
-- Color bomb (5-in-a-line)
+- Color bomb (5-in-a-line straight match)
+- Levels 33–34 in chapter “Advanced”
+
+### M5 — Deferred
+
 - Pre-level boosters (optional, no IAP)
 - Daily seeded challenge level
 

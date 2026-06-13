@@ -18,7 +18,7 @@ describe('specialEngine', () => {
     expect(spawn?.special).toBe('rocket-h');
   });
 
-  it('spawns a bomb from a 5-match line', () => {
+  it('spawns a color bomb from a 5-match straight line', () => {
     const groups = [
       {
         cells: [
@@ -27,6 +27,23 @@ describe('specialEngine', () => {
           { row: 1, col: 2 },
           { row: 1, col: 3 },
           { row: 1, col: 4 },
+        ],
+        length: 5,
+      },
+    ];
+    const spawn = classifySpecialSpawn(groups, 'sapphire');
+    expect(spawn?.special).toBe('color-bomb');
+  });
+
+  it('spawns a bomb from an L-shaped 5 cluster', () => {
+    const groups = [
+      {
+        cells: [
+          { row: 0, col: 0 },
+          { row: 0, col: 1 },
+          { row: 0, col: 2 },
+          { row: 1, col: 0 },
+          { row: 2, col: 0 },
         ],
         length: 5,
       },

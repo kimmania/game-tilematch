@@ -66,6 +66,26 @@ const STEPS: Record<TutorialId, TutorialStep[]> = {
       body: 'Items rest on tiles until the path opens. Clear columns so drops can reach the bottom.',
     },
   ],
+  grass: [
+    {
+      title: 'Spread the grass',
+      body: 'Green grass starts on seed tiles. When a match touches grass (on or next to it), grass spreads to every tile in that match.',
+    },
+    {
+      title: 'Cover the goal',
+      body: 'Spread grass onto all highlighted goal tiles before you run out of moves.',
+    },
+  ],
+  'color-bomb': [
+    {
+      title: 'Color bomb',
+      body: 'Match 5 tiles in a straight row or column to create a color bomb — look for the rainbow disc on the tile.',
+    },
+    {
+      title: 'Clear a color',
+      body: 'Swap or match the color bomb to remove every tile of that color on the board. On this level, you need a big color-bomb blast to reach the score goal.',
+    },
+  ],
 };
 
 export function openTutorialOverlay(id: TutorialId, onClose: () => void): void {

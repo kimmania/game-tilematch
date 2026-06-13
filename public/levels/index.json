@@ -127,6 +127,14 @@
     {
       "id": 32,
       "name": "Cherry drop"
+    },
+    {
+      "id": 33,
+      "name": "Grass trail"
+    },
+    {
+      "id": 34,
+      "name": "Color burst"
     }
   ],
   "chapters": [
@@ -185,6 +193,13 @@
       "levelIds": [
         31,
         32
+      ]
+    },
+    {
+      "name": "Advanced",
+      "levelIds": [
+        33,
+        34
       ]
     }
   ]

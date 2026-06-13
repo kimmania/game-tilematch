@@ -3,5 +3,6 @@
   { "name": "New mechanics", "from": 11, "to": 15 },
   { "name": "Rising challenge", "from": 16, "to": 25 },
   { "name": "Master boards", "from": 26, "to": 30 },
-  { "name": "Objectives", "from": 31, "to": 32 }
+  { "name": "Objectives", "from": 31, "to": 32 },
+  { "name": "Advanced", "from": 33, "to": 34 }
 ]

@@ -1,0 +1,13 @@
+{
+  "id": 34,
+  "name": "Color burst",
+  "rows": 8,
+  "cols": 8,
+  "moves": 35,
+  "colors": 4,
+  "seed": 13,
+  "goals": [
+    { "type": "score", "target": 8000 }
+  ],
+  "stars": [8000, 12000, 16000]
+}

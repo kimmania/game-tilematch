@@ -1,4 +1,5 @@
 import { cellKey } from './grid';
+import { tileColor } from './tile';
 import type {
   CollectibleKind,
   Coord,
@@ -17,6 +18,7 @@ export function cellsForSpecial(
   origin: Coord,
   rows: number,
   cols: number,
+  grid?: Grid,
 ): Coord[] {
   const cells: Coord[] = [];
 
@@ -42,11 +44,40 @@ export function cellsForSpecial(
         }
       }
       break;
+    case 'color-bomb': {
+      if (!grid) {
+        cells.push(origin);
+        break;
+      }
+      const color = tileColor(grid[origin.row]![origin.col]!.tile);
+      if (!color) {
+        cells.push(origin);
+        break;
+      }
+      for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
+          if (tileColor(grid[row]![col]!.tile) === color) {
+            cells.push({ row, col });
+          }
+        }
+      }
+      break;
+    }
     case 'propeller':
       cells.push(origin);
       break;
   }
 
+  return cells;
+}
+
+function allTileCells(grid: Grid): Coord[] {
+  const cells: Coord[] = [];
+  for (let row = 0; row < grid.length; row += 1) {
+    for (let col = 0; col < grid[0]!.length; col += 1) {
+      if (grid[row]![col]!.tile) cells.push({ row, col });
+    }
+  }
   return cells;
 }
 
@@ -58,6 +89,7 @@ export function cellsForSpecialCombo(
   posB: Coord,
   rows: number,
   cols: number,
+  grid: Grid,
 ): Coord[] {
   const map = new Map<string, Coord>();
 
@@ -67,9 +99,14 @@ export function cellsForSpecialCombo(
     }
   };
 
+  if (a === 'color-bomb' && b === 'color-bomb') {
+    add(allTileCells(grid));
+    return [...map.values()];
+  }
+
   if (a === 'propeller' || b === 'propeller') {
-    add(cellsForSpecial(a, posA, rows, cols));
-    add(cellsForSpecial(b, posB, rows, cols));
+    add(cellsForSpecial(a, posA, rows, cols, grid));
+    add(cellsForSpecial(b, posB, rows, cols, grid));
     add(cellsForSpecial('bomb', posA, rows, cols));
     add(cellsForSpecial('bomb', posB, rows, cols));
     return [...map.values()];
@@ -109,8 +146,28 @@ export function cellsForSpecialCombo(
     return [...map.values()];
   }
 
-  add(cellsForSpecial(a, posA, rows, cols));
-  add(cellsForSpecial(b, posB, rows, cols));
+  if (
+    (a.startsWith('rocket') && b === 'color-bomb') ||
+    (b.startsWith('rocket') && a === 'color-bomb')
+  ) {
+    const rocketPos = a.startsWith('rocket') ? posA : posB;
+    const colorPos = a === 'color-bomb' ? posA : posB;
+    add(cellsForSpecial('rocket-h', rocketPos, rows, cols));
+    add(cellsForSpecial('rocket-v', rocketPos, rows, cols));
+    add(cellsForSpecial('color-bomb', colorPos, rows, cols, grid));
+    return [...map.values()];
+  }
+
+  if ((a === 'bomb' && b === 'color-bomb') || (b === 'bomb' && a === 'color-bomb')) {
+    const colorPos = a === 'color-bomb' ? posA : posB;
+    const bombPos = a === 'bomb' ? posA : posB;
+    add(cellsForSpecial('color-bomb', colorPos, rows, cols, grid));
+    add(cellsForSpecial('bomb', bombPos, rows, cols));
+    return [...map.values()];
+  }
+
+  add(cellsForSpecial(a, posA, rows, cols, grid));
+  add(cellsForSpecial(b, posB, rows, cols, grid));
   return [...map.values()];
 }
 
@@ -163,11 +220,14 @@ export function classifySpecialSpawn(
   if (maxLen >= 5) {
     const line = groups.find((g) => g.length >= 5);
     if (line) {
-      return {
-        coord: pickSpawnCell(line.cells, swapA, swapB),
-        special: 'bomb',
-        color,
-      };
+      const straight = isStraightLine(line.cells);
+      if (straight.horizontal || straight.vertical) {
+        return {
+          coord: pickSpawnCell(line.cells, swapA, swapB),
+          special: 'color-bomb',
+          color,
+        };
+      }
     }
   }
 
@@ -214,6 +274,7 @@ export function classifySpecialSpawn(
 export type ObjectiveContext = {
   goals: LevelGoal[];
   progress: GoalProgress;
+  grassTargets?: Coord[];
 };
 
 function needsMore(goal: LevelGoal, progress: GoalProgress, kind: CollectibleKind): boolean {
@@ -245,6 +306,13 @@ function collectPriority(cell: Grid[0][0], ctx?: ObjectiveContext): number {
   return 43;
 }
 
+function grassPriority(row: number, col: number, grid: Grid, ctx?: ObjectiveContext): number {
+  if (!ctx?.grassTargets?.length) return 0;
+  const isTarget = ctx.grassTargets.some((t) => t.row === row && t.col === col);
+  if (!isTarget || grid[row]![col]!.grass) return 0;
+  return 42;
+}
+
 export function pickPropellerTarget(
   grid: Grid,
   origin: Coord,
@@ -261,6 +329,7 @@ export function pickPropellerTarget(
       const cell = grid[row]![col]!;
       let priority = dropPriority(cell, ctx);
       if (priority === 0) priority = collectPriority(cell, ctx);
+      if (priority === 0) priority = grassPriority(row, col, grid, ctx);
       if (priority === 0 && cell.jelly) priority = 40;
       else if (priority === 0 && cell.crateLayers > 0) priority = 30;
       else if (priority === 0 && cell.iceLayers > 0) priority = 20;

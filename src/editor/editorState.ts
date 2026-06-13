@@ -1,6 +1,6 @@
 import type { CollectDef, Coord, CrateDef, DropDef, IceDef, LevelDef, LevelGoal } from '../core/types';
 
-export type EditorTool = 'jelly' | 'crate' | 'ice' | 'collect' | 'drop' | 'erase';
+export type EditorTool = 'jelly' | 'crate' | 'ice' | 'collect' | 'drop' | 'grassSeed' | 'grass' | 'erase';
 
 export type EditorDraft = {
   id: number;
@@ -16,11 +16,14 @@ export type EditorDraft = {
   includeJellyGoal: boolean;
   includeCollectGoal: boolean;
   includeDropGoal: boolean;
+  includeGrassGoal: boolean;
   jelly: Coord[];
   crates: CrateDef[];
   ice: IceDef[];
   collect: CollectDef[];
   drops: DropDef[];
+  grassSeeds: Coord[];
+  grass: Coord[];
 };
 
 export function createEmptyDraft(): EditorDraft {
@@ -38,11 +41,14 @@ export function createEmptyDraft(): EditorDraft {
     includeJellyGoal: false,
     includeCollectGoal: false,
     includeDropGoal: false,
+    includeGrassGoal: false,
     jelly: [],
     crates: [],
     ice: [],
     collect: [],
     drops: [],
+    grassSeeds: [],
+    grass: [],
   };
 }
 
@@ -51,6 +57,7 @@ export function draftFromLevel(level: LevelDef): EditorDraft {
   const jellyGoal = level.goals.find((g) => g.type === 'jelly');
   const collectGoal = level.goals.find((g) => g.type === 'collect');
   const dropGoal = level.goals.find((g) => g.type === 'drop');
+  const grassGoal = level.goals.find((g) => g.type === 'grass');
 
   return {
     id: level.id,
@@ -66,11 +73,14 @@ export function draftFromLevel(level: LevelDef): EditorDraft {
     includeJellyGoal: jellyGoal != null,
     includeCollectGoal: collectGoal != null,
     includeDropGoal: dropGoal != null,
+    includeGrassGoal: grassGoal != null,
     jelly: (level.layout?.jelly ?? []).map((c) => ({ ...c })),
     crates: (level.layout?.crates ?? []).map((c) => ({ ...c })),
     ice: (level.layout?.ice ?? []).map((c) => ({ ...c })),
     collect: (level.layout?.collect ?? []).map((c) => ({ ...c })),
     drops: (level.layout?.drops ?? []).map((c) => ({ ...c })),
+    grassSeeds: (level.layout?.grassSeeds ?? []).map((c) => ({ ...c })),
+    grass: (level.layout?.grass ?? []).map((c) => ({ ...c })),
   };
 }
 
@@ -93,6 +103,9 @@ export function toLevelDef(draft: EditorDraft): LevelDef {
   if (draft.includeDropGoal && cherryDropCount(draft) > 0) {
     goals.push({ type: 'drop', target: cherryDropCount(draft), item: 'cherry' });
   }
+  if (draft.includeGrassGoal && draft.grass.length > 0) {
+    goals.push({ type: 'grass', target: draft.grass.length });
+  }
 
   const level: LevelDef = {
     id: draft.id,
@@ -111,7 +124,9 @@ export function toLevelDef(draft: EditorDraft): LevelDef {
     draft.crates.length > 0 ||
     draft.ice.length > 0 ||
     draft.collect.length > 0 ||
-    draft.drops.length > 0
+    draft.drops.length > 0 ||
+    draft.grass.length > 0 ||
+    draft.grassSeeds.length > 0
   ) {
     level.layout = {};
     if (draft.jelly.length > 0) level.layout.jelly = draft.jelly.map((c) => ({ ...c }));
@@ -119,6 +134,8 @@ export function toLevelDef(draft: EditorDraft): LevelDef {
     if (draft.ice.length > 0) level.layout.ice = draft.ice.map((c) => ({ ...c }));
     if (draft.collect.length > 0) level.layout.collect = draft.collect.map((c) => ({ ...c }));
     if (draft.drops.length > 0) level.layout.drops = draft.drops.map((c) => ({ ...c }));
+    if (draft.grass.length > 0) level.layout.grass = draft.grass.map((c) => ({ ...c }));
+    if (draft.grassSeeds.length > 0) level.layout.grassSeeds = draft.grassSeeds.map((c) => ({ ...c }));
   }
 
   return level;
@@ -134,6 +151,14 @@ function findCrateIndex(draft: EditorDraft, row: number, col: number): number {
 
 function findIceIndex(draft: EditorDraft, row: number, col: number): number {
   return draft.ice.findIndex((c) => c.row === row && c.col === col);
+}
+
+function findGrassIndex(draft: EditorDraft, row: number, col: number): number {
+  return draft.grass.findIndex((c) => c.row === row && c.col === col);
+}
+
+function findGrassSeedIndex(draft: EditorDraft, row: number, col: number): number {
+  return draft.grassSeeds.findIndex((c) => c.row === row && c.col === col);
 }
 
 function findCollectIndex(draft: EditorDraft, row: number, col: number): number {
@@ -194,6 +219,18 @@ export function cycleDrop(draft: EditorDraft, row: number, col: number): void {
   else draft.drops.splice(index, 1);
 }
 
+export function toggleGrassSeed(draft: EditorDraft, row: number, col: number): void {
+  const index = findGrassSeedIndex(draft, row, col);
+  if (index >= 0) draft.grassSeeds.splice(index, 1);
+  else draft.grassSeeds.push({ row, col });
+}
+
+export function toggleGrassTarget(draft: EditorDraft, row: number, col: number): void {
+  const index = findGrassIndex(draft, row, col);
+  if (index >= 0) draft.grass.splice(index, 1);
+  else draft.grass.push({ row, col });
+}
+
 export function eraseCell(draft: EditorDraft, row: number, col: number): void {
   const j = findJellyIndex(draft, row, col);
   if (j >= 0) draft.jelly.splice(j, 1);
@@ -205,6 +242,10 @@ export function eraseCell(draft: EditorDraft, row: number, col: number): void {
   if (colIdx >= 0) draft.collect.splice(colIdx, 1);
   const d = findDropIndex(draft, row, col);
   if (d >= 0) draft.drops.splice(d, 1);
+  const gs = findGrassSeedIndex(draft, row, col);
+  if (gs >= 0) draft.grassSeeds.splice(gs, 1);
+  const g = findGrassIndex(draft, row, col);
+  if (g >= 0) draft.grass.splice(g, 1);
 }
 
 export function applyTool(draft: EditorDraft, tool: EditorTool, row: number, col: number): void {
@@ -226,6 +267,12 @@ export function applyTool(draft: EditorDraft, tool: EditorTool, row: number, col
     case 'drop':
       cycleDrop(draft, row, col);
       break;
+    case 'grassSeed':
+      toggleGrassSeed(draft, row, col);
+      break;
+    case 'grass':
+      toggleGrassTarget(draft, row, col);
+      break;
     case 'erase':
       eraseCell(draft, row, col);
       break;
@@ -233,7 +280,7 @@ export function applyTool(draft: EditorDraft, tool: EditorTool, row: number, col
 }
 
 export function draftSummary(draft: EditorDraft): string {
-  return `${draft.rows}×${draft.cols} · ${draft.moves} moves · jelly ${draft.jelly.length} · collect ${draft.collect.length} · drops ${draft.drops.length}`;
+  return `${draft.rows}×${draft.cols} · ${draft.moves} moves · jelly ${draft.jelly.length} · grass ${draft.grass.length}`;
 }
 
 export function normalizeDraftBounds(draft: EditorDraft): void {
@@ -250,6 +297,12 @@ export function normalizeDraftBounds(draft: EditorDraft): void {
     (c) => c.row >= 0 && c.row < draft.rows && c.col >= 0 && c.col < draft.cols,
   );
   draft.drops = draft.drops.filter(
+    (c) => c.row >= 0 && c.row < draft.rows && c.col >= 0 && c.col < draft.cols,
+  );
+  draft.grass = draft.grass.filter(
+    (c) => c.row >= 0 && c.row < draft.rows && c.col >= 0 && c.col < draft.cols,
+  );
+  draft.grassSeeds = draft.grassSeeds.filter(
     (c) => c.row >= 0 && c.row < draft.rows && c.col >= 0 && c.col < draft.cols,
   );
 }

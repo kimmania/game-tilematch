@@ -55,6 +55,8 @@ const HINTS: Record<number, string> = {
   15: 'Use rockets, bombs, and propellers together to clear jelly and crates.',
   31: 'Match on or next to cherries to collect them.',
   32: 'Clear tiles in a cherry column — the cherry rides down on the candy below it until it exits the bottom row.',
+  33: 'Match next to green grass to spread it. Cover all grass goal tiles to win.',
+  34: 'Score goal is high so you can experiment. Match 5 in a straight line for a color bomb, then swap it to clear that color and score big.',
 };
 
 function normalizeProgress(progress: Partial<GoalProgress> | undefined): GoalProgress {
@@ -142,6 +144,7 @@ export class TileMatchApp {
           stars: session.stars,
           progress: normalizeProgress(session.progress),
           totalJelly: session.totalJelly,
+          grassTargets: session.grassTargets ?? [],
         };
       } else {
         this.state = createGameState(level);

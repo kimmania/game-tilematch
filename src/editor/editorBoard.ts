@@ -30,8 +30,11 @@ export function createEditorBoard(
         const ice = draft.ice.find((c) => c.row === row && c.col === col)?.layers ?? 0;
         const collect = draft.collect.find((c) => c.row === row && c.col === col)?.kind;
         const drop = draft.drops.find((c) => c.row === row && c.col === col)?.kind;
+        const grassSeed = draft.grassSeeds.some((c) => c.row === row && c.col === col);
+        const grassTarget = draft.grass.some((c) => c.row === row && c.col === col);
 
         if (jelly) btn.classList.add('has-jelly');
+        if (grassSeed || grassTarget) btn.classList.add('has-grass');
         if (crate > 0) btn.classList.add('has-crate');
         if (ice > 0) btn.classList.add('has-ice');
 
@@ -41,6 +44,8 @@ export function createEditorBoard(
         if (ice > 0) parts.push(`ice×${ice}`);
         if (collect) parts.push(`collect ${collect}`);
         if (drop) parts.push(`drop ${drop}`);
+        if (grassSeed) parts.push('grass seed');
+        if (grassTarget) parts.push('grass goal');
         btn.setAttribute('aria-label', parts.join(' · '));
 
         if (crate > 0) {

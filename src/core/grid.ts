@@ -18,6 +18,7 @@ export function createEmptyCell(): Cell {
     iceLayers: 0,
     collectible: null,
     drop: null,
+    grass: false,
   };
 }
 
@@ -202,6 +203,11 @@ export function applyLayout(grid: Grid, layout: LevelLayout | undefined): number
   for (const item of layout.drops ?? []) {
     if (!inBounds(grid, item.row, item.col)) continue;
     grid[item.row]![item.col]!.drop = item.kind;
+  }
+
+  for (const { row, col } of layout.grassSeeds ?? []) {
+    if (!inBounds(grid, row, col)) continue;
+    grid[row]![col]!.grass = true;
   }
 
   return jellyCount;

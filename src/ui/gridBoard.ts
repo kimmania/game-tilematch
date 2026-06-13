@@ -23,6 +23,7 @@ function cellLabel(state: GameState, row: number, col: number): string {
   const parts: string[] = [];
 
   if (cell.jelly) parts.push('jelly');
+  if (cell.grass) parts.push('grass');
   if (cell.crateLayers > 0) parts.push(`crate ${cell.crateLayers} layers`);
   if (cell.iceLayers > 0) parts.push(`ice ${cell.iceLayers} layers`);
   if (cell.collectible) parts.push(`collect ${collectibleLabel(cell.collectible)}`);
@@ -63,6 +64,7 @@ export function createGridBoard(host: HTMLElement, options: GridBoardOptions): G
         const isSelected = sel?.row === row && sel?.col === col;
         if (isSelected) cell.classList.add('selected');
         if (slot.jelly) cell.classList.add('has-jelly');
+        if (slot.grass) cell.classList.add('has-grass');
         if (slot.crateLayers > 0) cell.classList.add('has-crate');
         if (slot.iceLayers > 0) cell.classList.add('has-ice');
 

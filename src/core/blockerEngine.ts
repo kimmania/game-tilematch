@@ -126,7 +126,7 @@ export function applyPropellerHit(
   let extra: Coord[] = [];
 
   if (slot.tile && isSpecial(slot.tile)) {
-    extra = cellsForSpecial(slot.tile.special, target, rows, cols);
+    extra = cellsForSpecial(slot.tile.special, target, rows, cols, grid);
   }
 
   const all = [{ ...target }, ...extra];
@@ -144,7 +144,7 @@ export function collectSpecialActivations(
   for (const coord of coords) {
     const tile = grid[coord.row]![coord.col]!.tile;
     if (!tile || !isSpecial(tile)) continue;
-    for (const cell of cellsForSpecial(tile.special, coord, rows, cols)) {
+    for (const cell of cellsForSpecial(tile.special, coord, rows, cols, grid)) {
       map.set(cellKey(cell.row, cell.col), cell);
     }
   }

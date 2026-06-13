@@ -15,6 +15,10 @@ function dropCount(level: LevelDef, kind: CollectibleKind): number {
   return (level.layout?.drops ?? []).filter((item) => item.kind === kind).length;
 }
 
+function grassTargetCount(level: LevelDef): number {
+  return level.layout?.grass?.length ?? 0;
+}
+
 function isCollectibleKind(value: unknown): value is CollectibleKind {
   return value === 'cherry' || value === 'coin';
 }
@@ -97,6 +101,17 @@ export function validateLevel(level: LevelDef, expectedId?: number): void {
         throw new Error(
           `drop goal ${goal.target} exceeds layout ${goal.item} drops (${available})`,
         );
+      }
+    } else if (goal.type === 'grass') {
+      if (!Number.isInteger(goal.target) || goal.target < 1) {
+        throw new Error('grass goal target must be a positive integer');
+      }
+      const available = grassTargetCount(level);
+      if (goal.target > available) {
+        throw new Error(`grass goal ${goal.target} exceeds layout grass cells (${available})`);
+      }
+      if ((level.layout?.grassSeeds?.length ?? 0) < 1) {
+        throw new Error('grass levels need at least one grassSeeds cell');
       }
     } else {
       throw new Error(`unsupported goal type: ${(goal as { type: string }).type}`);
@@ -196,6 +211,19 @@ export function validateLevel(level: LevelDef, expectedId?: number): void {
     }
     if (!isCollectibleKind(item.kind)) {
       throw new Error('drop kind must be cherry or coin');
+    }
+  }
+
+  for (const cell of [...(level.layout?.grass ?? []), ...(level.layout?.grassSeeds ?? [])]) {
+    if (
+      !Number.isInteger(cell.row) ||
+      !Number.isInteger(cell.col) ||
+      cell.row < 0 ||
+      cell.row >= level.rows ||
+      cell.col < 0 ||
+      cell.col >= level.cols
+    ) {
+      throw new Error('grass coordinates out of bounds');
     }
   }
 }

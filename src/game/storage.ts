@@ -45,6 +45,7 @@ export type SessionSnapshot = Pick<
   | 'palette'
   | 'progress'
   | 'totalJelly'
+  | 'grassTargets'
 > & {
   rows: number;
   cols: number;
@@ -67,6 +68,7 @@ export function saveSession(levelId: number, state: GameState): void {
     stars: state.stars,
     progress: state.progress,
     totalJelly: state.totalJelly,
+    grassTargets: state.grassTargets,
   };
   localStorage.setItem(key, JSON.stringify(snapshot));
 }

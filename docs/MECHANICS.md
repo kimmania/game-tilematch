@@ -30,8 +30,9 @@
 |------------|---------|--------------------------------------|
 | 4 in a row | **Rocket ↔** | Clears entire row |
 | 4 in a column | **Rocket ↕** | Clears entire column |
-| 5 in a line or L/T | **Bomb** | Clears 3×3 area |
-| 2×2 square | **Propeller** | Flies to a priority target (drop → collect → jelly → crate → ice → tile) |
+| 5 in a straight line | **Color bomb** | Clears every tile of that color |
+| 5 in an L/T shape | **Bomb** | Clears 3×3 area |
+| 2×2 square | **Propeller** | Flies to a priority target (drop → collect → grass → jelly → crate → ice → tile) |
 
 ### Special combos (swap two adjacent specials)
 
@@ -40,6 +41,7 @@
 | Rocket + Rocket | Cross blast (both row and column at each position) |
 | Bomb + Bomb | 5×5 blast centered on first tile |
 | Rocket + Bomb | Cross + bombs at both tiles |
+| Color bomb + Color bomb | Clears every tile on the board |
 | Propeller + anything | Large blast at both tiles + propeller targeting |
 
 ## Blockers (M2)
@@ -58,6 +60,15 @@
 | **Jelly** | Clear target number of jelly cells |
 | **Collect** | Match on or next to static cherries/coins on the board |
 | **Drop** | Guide falling cherries/coins to the bottom row |
+| **Grass** | Spread carpet onto all goal tiles from seed cells |
+
+## Grass / carpet (M5)
+
+| Rule | Behavior |
+|------|----------|
+| **Seeds** | Some cells start with green grass (`grassSeeds` in level JSON) |
+| **Spread** | When a match touches grass (on a matched cell or adjacent), grass spreads to every cell in that match |
+| **Goal** | Cover all `grass` goal tiles marked in the level layout |
 
 ## Collectibles (M4)
 

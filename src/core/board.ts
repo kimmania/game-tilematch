@@ -45,6 +45,7 @@ import {
   collectFromHits,
   mergeCounts,
 } from './collectibles';
+import { countGrassOnTargets, spreadGrassFromHits } from './grassEngine';
 
 function createGridWithoutMatches(
   rows: number,
@@ -140,8 +141,12 @@ function damageNeighbors(grid: Grid, hitCells: Coord[]): void {
   damageAdjacentIce(grid, hitCells);
 }
 
+function applyGrass(state: GameState, hitCells: Coord[]): void {
+  spreadGrassFromHits(state.grid, hitCells);
+}
+
 function objectiveContext(state: GameState) {
-  return { goals: state.goals, progress: state.progress };
+  return { goals: state.goals, progress: state.progress, grassTargets: state.grassTargets };
 }
 
 function propellersInCells(grid: Grid, cells: Coord[]): Coord[] {
@@ -182,6 +187,7 @@ function runCascadeStep(
   damageNeighbors(state.grid, clearResult.hitCells);
   state.progress.jellyCleared += clearResult.clearedJelly;
   applyCollectibles(state, clearResult.hitCells);
+  applyGrass(state, clearResult.hitCells);
 
   for (const origin of propellerOrigins) {
     const propResult = applyPropellerHit(
@@ -195,6 +201,7 @@ function runCascadeStep(
     state.progress.jellyCleared += propResult.clearedJelly;
     damageNeighbors(state.grid, propResult.hitCells);
     applyCollectibles(state, propResult.hitCells);
+    applyGrass(state, propResult.hitCells);
     clearResult.clearedTiles.push(...propResult.clearedTiles);
     if (propResult.activated.length > 0) {
       clearResult.activated.push(...propResult.activated);
@@ -238,6 +245,7 @@ function runSpecialCombo(
     posB,
     state.rows,
     state.cols,
+    state.grid,
   );
 
   state.grid[posA.row]![posA.col]!.tile = null;
@@ -247,6 +255,7 @@ function runSpecialCombo(
   damageNeighbors(state.grid, clearResult.hitCells);
   state.progress.jellyCleared += clearResult.clearedJelly;
   applyCollectibles(state, clearResult.hitCells);
+  applyGrass(state, clearResult.hitCells);
 
   const points = scoreForStep(clearResult.clearedTiles.length, 1);
   state.score += points;
@@ -303,6 +312,8 @@ export function createGameState(level: LevelDef): GameState {
     shuffleGridColors(grid, palette, rng);
   }
 
+  const grassTargets = (level.layout?.grass ?? []).map((c) => ({ ...c }));
+
   return {
     levelId: level.id,
     rows: level.rows,
@@ -322,6 +333,7 @@ export function createGameState(level: LevelDef): GameState {
       dropped: emptyCollectibleCounts(),
     },
     totalJelly,
+    grassTargets,
   };
 }
 
@@ -336,6 +348,7 @@ export function cloneGameState(state: GameState): GameState {
       collected: { ...state.progress.collected },
       dropped: { ...state.progress.dropped },
     },
+    grassTargets: state.grassTargets.map((c) => ({ ...c })),
   };
 }
 
@@ -360,7 +373,8 @@ function goalMet(state: GameState, goal: LevelGoal): boolean {
   if (goal.type === 'score') return state.score >= goal.target;
   if (goal.type === 'jelly') return state.progress.jellyCleared >= goal.target;
   if (goal.type === 'collect') return state.progress.collected[goal.item] >= goal.target;
-  return state.progress.dropped[goal.item] >= goal.target;
+  if (goal.type === 'drop') return state.progress.dropped[goal.item] >= goal.target;
+  return countGrassOnTargets(state.grid, state.grassTargets) >= goal.target;
 }
 
 export function goalsMet(state: GameState): boolean {
@@ -446,6 +460,9 @@ export function formatGoals(state: GameState): string {
     } else if (goal.type === 'drop') {
       const label = goal.item === 'cherry' ? 'Drop cherries' : 'Drop coins';
       parts.push(`${label} ${state.progress.dropped[goal.item]}/${goal.target}`);
+    } else if (goal.type === 'grass') {
+      const covered = countGrassOnTargets(state.grid, state.grassTargets);
+      parts.push(`Grass ${covered}/${goal.target}`);
     }
   }
   return parts.join(' · ');

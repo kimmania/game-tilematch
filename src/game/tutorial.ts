@@ -1,4 +1,4 @@
-export type TutorialId = 'basics' | 'rocket' | 'jelly' | 'crate-ice' | 'collect' | 'drop';
+export type TutorialId = 'basics' | 'rocket' | 'jelly' | 'crate-ice' | 'collect' | 'drop' | 'grass' | 'color-bomb';
 
 const STORAGE_KEY = 'tilematch-tutorial-dismissed';
 
@@ -45,6 +45,10 @@ export function tutorialForLevel(levelId: number): TutorialId | null {
       return 'collect';
     case 32:
       return 'drop';
+    case 33:
+      return 'grass';
+    case 34:
+      return 'color-bomb';
     default:
       return null;
   }

@@ -1,0 +1,27 @@
+{
+  "id": 33,
+  "name": "Grass trail",
+  "rows": 8,
+  "cols": 8,
+  "moves": 22,
+  "colors": 4,
+  "seed": 2033,
+  "goals": [
+    { "type": "score", "target": 2800 },
+    { "type": "grass", "target": 8 }
+  ],
+  "stars": [2800, 4200, 5800],
+  "layout": {
+    "grassSeeds": [{ "row": 6, "col": 1 }],
+    "grass": [
+      { "row": 5, "col": 1 },
+      { "row": 4, "col": 1 },
+      { "row": 3, "col": 1 },
+      { "row": 2, "col": 1 },
+      { "row": 2, "col": 2 },
+      { "row": 2, "col": 3 },
+      { "row": 2, "col": 4 },
+      { "row": 2, "col": 5 }
+    ]
+  }
+}

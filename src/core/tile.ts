@@ -24,6 +24,8 @@ export function specialLabel(special: SpecialKind): string {
       return 'Vertical rocket';
     case 'bomb':
       return 'Bomb';
+    case 'color-bomb':
+      return 'Color bomb';
     case 'propeller':
       return 'Propeller';
   }

@@ -24,6 +24,8 @@ const TOOL_HINTS: Record<EditorTool, string> = {
   ice: 'Tap to cycle ice: none → 1 layer → 2 layers → remove.',
   collect: 'Tap to cycle collect: none → cherry → coin → remove.',
   drop: 'Tap to cycle drop: none → cherry → coin → remove.',
+  grassSeed: 'Tap to toggle a grass seed (starting carpet).',
+  grass: 'Tap to toggle a grass goal tile (must be covered).',
   erase: 'Tap to remove all blockers and items from a cell.',
 };
 
@@ -85,6 +87,8 @@ export async function bootstrapEditor(): Promise<void> {
     { id: 'ice', label: 'Ice' },
     { id: 'collect', label: 'Collect' },
     { id: 'drop', label: 'Drop' },
+    { id: 'grassSeed', label: 'Seed' },
+    { id: 'grass', label: 'Grass' },
     { id: 'erase', label: 'Erase' },
   ];
 
@@ -174,6 +178,10 @@ export async function bootstrapEditor(): Promise<void> {
   dropGoalCheck.type = 'checkbox';
   dropGoalCheck.checked = draft.includeDropGoal;
 
+  const grassGoalCheck = document.createElement('input');
+  grassGoalCheck.type = 'checkbox';
+  grassGoalCheck.checked = draft.includeGrassGoal;
+
   metaForm.append(
     field('Id', idInput),
     field('Name', nameInput),
@@ -205,6 +213,12 @@ export async function bootstrapEditor(): Promise<void> {
   metaForm.appendChild(jellyGoalLabel);
   metaForm.appendChild(collectGoalLabel);
   metaForm.appendChild(dropGoalLabel);
+
+  const grassGoalLabel = document.createElement('label');
+  grassGoalLabel.className = 'editor-field editor-field-check';
+  grassGoalLabel.append(grassGoalCheck, document.createTextNode(' Grass goal (cover all grass tiles)'));
+
+  metaForm.appendChild(grassGoalLabel);
 
   const hint = document.createElement('p');
   hint.className = 'hint editor-hint';
@@ -272,6 +286,7 @@ export async function bootstrapEditor(): Promise<void> {
     draft.includeJellyGoal = jellyGoalCheck.checked;
     draft.includeCollectGoal = collectGoalCheck.checked;
     draft.includeDropGoal = dropGoalCheck.checked;
+    draft.includeGrassGoal = grassGoalCheck.checked;
     normalizeDraftBounds(draft);
   }
 
@@ -295,6 +310,7 @@ export async function bootstrapEditor(): Promise<void> {
   jellyGoalCheck.addEventListener('change', () => refresh());
   collectGoalCheck.addEventListener('change', () => refresh());
   dropGoalCheck.addEventListener('change', () => refresh());
+  grassGoalCheck.addEventListener('change', () => refresh());
 
   previewBtn.addEventListener('click', () => {
     readForm();
@@ -354,6 +370,7 @@ export async function bootstrapEditor(): Promise<void> {
       jellyGoalCheck.checked = draft.includeJellyGoal;
       collectGoalCheck.checked = draft.includeCollectGoal;
       dropGoalCheck.checked = draft.includeDropGoal;
+      grassGoalCheck.checked = draft.includeGrassGoal;
       refresh();
       status.textContent = `Imported level ${draft.id}.`;
       status.dataset.variant = 'ok';
