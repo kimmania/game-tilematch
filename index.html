@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Tile Match" />
+    <meta name="theme-color" content="#1e2a3a" />
+    <meta
+      name="description"
+      content="Swap tiles, match colors, and beat the score goal before you run out of moves."
+    />
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <title>Tile Match</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <div>
+          <h1 class="title">Tile Match</h1>
+          <button type="button" id="level-meta" class="level-meta level-meta-btn">
+            Level 1
+          </button>
+        </div>
+        <div class="header-actions">
+          <span id="status-chip" class="status-chip" data-variant="playing">Playing</span>
+        </div>
+      </header>
+
+      <p id="continue-banner" class="continue-banner hidden" role="status"></p>
+      <p id="level-title" class="level-title">Loading…</p>
+
+      <div class="hud-row">
+        <p id="move-counter" class="hud-stat" aria-live="polite">Moves left: —</p>
+        <p id="score-counter" class="hud-stat" aria-live="polite">Score: —</p>
+        <p id="stars-hud" class="hud-stars" aria-label="Star progress">☆☆☆</p>
+      </div>
+
+      <p id="hint" class="hint" aria-live="polite">
+        Tap a tile, then tap an adjacent tile to swap and match 3+.
+      </p>
+
+      <main class="game-area">
+        <div id="board-host" class="board-host"></div>
+      </main>
+
+      <div id="win-panel" class="win-panel hidden" role="status" aria-live="polite">
+        <p id="win-banner" class="win-banner">Level cleared!</p>
+      </div>
+
+      <footer class="controls" aria-label="Game controls">
+        <button type="button" id="prev-level" class="btn" disabled>Prev</button>
+        <button type="button" id="levels-btn" class="btn">Levels</button>
+        <button type="button" id="restart" class="btn btn-primary">Restart</button>
+        <button type="button" id="next-level" class="btn" disabled>Next</button>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

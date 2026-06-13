@@ -1,0 +1,61 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "name": "First swap"
+    },
+    {
+      "id": 2,
+      "name": "Warm cascade"
+    },
+    {
+      "id": 3,
+      "name": "Garden gate"
+    },
+    {
+      "id": 4,
+      "name": "Royal colors"
+    },
+    {
+      "id": 5,
+      "name": "Court yard"
+    },
+    {
+      "id": 6,
+      "name": "Grand hall"
+    },
+    {
+      "id": 7,
+      "name": "Treasure room"
+    },
+    {
+      "id": 8,
+      "name": "Castle keep"
+    },
+    {
+      "id": 9,
+      "name": "Throne approach"
+    },
+    {
+      "id": 10,
+      "name": "Royal finale"
+    }
+  ],
+  "chapters": [
+    {
+      "name": "First steps",
+      "levelIds": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    }
+  ]
+}

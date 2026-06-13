@@ -1,0 +1,11 @@
+{
+  "id": 7,
+  "name": "Treasure room",
+  "rows": 8,
+  "cols": 8,
+  "moves": 16,
+  "colors": 5,
+  "seed": 1007,
+  "goals": [{ "type": "score", "target": 3500 }],
+  "stars": [3500, 5200, 7200]
+}

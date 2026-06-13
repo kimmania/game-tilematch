@@ -1,0 +1,11 @@
+{
+  "id": 3,
+  "name": "Garden gate",
+  "rows": 7,
+  "cols": 7,
+  "moves": 20,
+  "colors": 4,
+  "seed": 1003,
+  "goals": [{ "type": "score", "target": 1800 }],
+  "stars": [1800, 2800, 4200]
+}

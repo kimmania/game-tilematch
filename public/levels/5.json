@@ -1,0 +1,11 @@
+{
+  "id": 5,
+  "name": "Court yard",
+  "rows": 7,
+  "cols": 7,
+  "moves": 18,
+  "colors": 5,
+  "seed": 1005,
+  "goals": [{ "type": "score", "target": 2600 }],
+  "stars": [2600, 4000, 5800]
+}

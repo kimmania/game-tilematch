@@ -1,0 +1,11 @@
+{
+  "id": 8,
+  "name": "Castle keep",
+  "rows": 8,
+  "cols": 8,
+  "moves": 15,
+  "colors": 5,
+  "seed": 1008,
+  "goals": [{ "type": "score", "target": 4000 }],
+  "stars": [4000, 5800, 8000]
+}

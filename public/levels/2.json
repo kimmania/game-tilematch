@@ -1,0 +1,11 @@
+{
+  "id": 2,
+  "name": "Warm cascade",
+  "rows": 6,
+  "cols": 6,
+  "moves": 20,
+  "colors": 4,
+  "seed": 1002,
+  "goals": [{ "type": "score", "target": 1500 }],
+  "stars": [1500, 2400, 3800]
+}

@@ -1,0 +1,11 @@
+{
+  "id": 4,
+  "name": "Royal colors",
+  "rows": 7,
+  "cols": 7,
+  "moves": 18,
+  "colors": 5,
+  "seed": 1004,
+  "goals": [{ "type": "score", "target": 2200 }],
+  "stars": [2200, 3400, 5000]
+}

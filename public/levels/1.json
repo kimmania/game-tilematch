@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "name": "First swap",
+  "rows": 6,
+  "cols": 6,
+  "moves": 22,
+  "colors": 4,
+  "seed": 1001,
+  "goals": [{ "type": "score", "target": 1200 }],
+  "stars": [1200, 2000, 3200]
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Tile Match">
+  <rect width="512" height="512" rx="96" fill="#1e2a3a"/>
+  <rect x="96" y="96" width="128" height="128" rx="24" fill="#e85d6a"/>
+  <rect x="288" y="96" width="128" height="128" rx="24" fill="#4a9cf0"/>
+  <rect x="96" y="288" width="128" height="128" rx="24" fill="#45c98a"/>
+  <rect x="288" y="288" width="128" height="128" rx="24" fill="#f0b429"/>
+</svg>

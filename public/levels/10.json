@@ -1,0 +1,11 @@
+{
+  "id": 10,
+  "name": "Royal finale",
+  "rows": 8,
+  "cols": 8,
+  "moves": 12,
+  "colors": 5,
+  "seed": 1010,
+  "goals": [{ "type": "score", "target": 5000 }],
+  "stars": [5000, 7000, 9500]
+}

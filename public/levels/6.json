@@ -1,0 +1,11 @@
+{
+  "id": 6,
+  "name": "Grand hall",
+  "rows": 8,
+  "cols": 8,
+  "moves": 20,
+  "colors": 4,
+  "seed": 1006,
+  "goals": [{ "type": "score", "target": 3000 }],
+  "stars": [3000, 4600, 6500]
+}
