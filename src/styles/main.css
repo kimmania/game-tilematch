@@ -1070,6 +1070,37 @@ body {
   accent-color: var(--accent);
 }
 
+.settings-help-btn {
+  width: 100%;
+  margin: 4px 0 12px;
+}
+
+.help-panel {
+  max-width: 360px;
+}
+
+.help-intro {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.help-topics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.help-topic-btn {
+  min-height: 40px;
+  font-size: 0.82rem;
+  padding: 8px 10px;
+  white-space: normal;
+  line-height: 1.25;
+}
+
 .settings-reset-hint {
   margin: 12px 0 8px;
   font-size: 0.8rem;

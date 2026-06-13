@@ -45,7 +45,7 @@ import {
   closeSettingsPanel,
   openSettingsPanel,
 } from './ui/settingsPanel';
-import { closeTutorialOverlay, isTutorialOpen, openTutorialOverlay } from './ui/tutorialOverlay';
+import { closeHelpOverlay, closeTutorialOverlay, isTutorialOpen, openHelpOverlay, openTutorialOverlay } from './ui/tutorialOverlay';
 
 const HINTS: Record<number, string> = {
   11: 'Match 4 in a row to create a rocket. Tap two adjacent tiles to swap.',
@@ -306,11 +306,16 @@ export class TileMatchApp {
         });
         if (this.state) this.board.render(this.state);
       },
+      onHelp: () => {
+        closeSettingsPanel();
+        openHelpOverlay();
+      },
       onResetData: () => {
         if (!window.confirm('Reset all progress, saves, and settings?')) return;
         clearAllUserData();
         closeSettingsPanel();
         closeTutorialOverlay();
+        closeHelpOverlay();
         this.progress = loadProgress();
         this.settings = loadSettings();
         applyMotionClass(this.settings.reduceMotion);

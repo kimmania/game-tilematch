@@ -8,12 +8,20 @@ type TutorialStep = {
 const STEPS: Record<TutorialId, TutorialStep[]> = {
   basics: [
     {
-      title: 'Swap to match',
-      body: 'Tap a tile, then tap an adjacent tile to swap. Match 3 or more of the same color in a row or column to clear them.',
+      title: 'Tap to swap',
+      body: 'Tap a tile, then tap a neighbor (up, down, left, or right) to swap them. Diagonal swaps are not allowed.',
+    },
+    {
+      title: 'Make a match',
+      body: 'Line up 3 or more tiles of the same color in a row or column. Matched tiles clear, new ones fall in, and you score points.',
+    },
+    {
+      title: 'Valid swaps only',
+      body: 'A swap must create at least one match. If nothing would match, the tiles bounce back and that move is not counted.',
     },
     {
       title: 'Score and moves',
-      body: 'Reach the score goal before you run out of moves. Earn up to 3 stars by scoring higher.',
+      body: 'Reach the level goal before you run out of moves. Earn up to 3 stars by scoring higher than the target.',
     },
   ],
   rocket: [
@@ -88,10 +96,31 @@ const STEPS: Record<TutorialId, TutorialStep[]> = {
   ],
 };
 
-export function openTutorialOverlay(id: TutorialId, onClose: () => void): void {
+export const HELP_TOPICS: { id: TutorialId; label: string }[] = [
+  { id: 'basics', label: 'Matching & goals' },
+  { id: 'rocket', label: 'Rockets & combos' },
+  { id: 'jelly', label: 'Jelly tiles' },
+  { id: 'crate-ice', label: 'Crates & ice' },
+  { id: 'collect', label: 'Collect items' },
+  { id: 'drop', label: 'Drop items' },
+  { id: 'grass', label: 'Grass goals' },
+  { id: 'color-bomb', label: 'Color bomb' },
+];
+
+export type TutorialOverlayOptions = {
+  /** Review from Help — do not mark the mechanic as dismissed. */
+  review?: boolean;
+};
+
+export function openTutorialOverlay(
+  id: TutorialId,
+  onClose: () => void,
+  options: TutorialOverlayOptions = {},
+): void {
   closeTutorialOverlay();
 
   const steps = STEPS[id];
+  const review = options.review === true;
   let stepIndex = 0;
 
   const overlay = document.createElement('div');
@@ -106,7 +135,7 @@ export function openTutorialOverlay(id: TutorialId, onClose: () => void): void {
 
   const kicker = document.createElement('p');
   kicker.className = 'tutorial-kicker';
-  kicker.textContent = 'How to play';
+  kicker.textContent = review ? 'Help' : 'How to play';
 
   const title = document.createElement('h2');
   title.id = 'tutorial-title';
@@ -135,10 +164,10 @@ export function openTutorialOverlay(id: TutorialId, onClose: () => void): void {
   const skipBtn = document.createElement('button');
   skipBtn.type = 'button';
   skipBtn.className = 'btn tutorial-skip';
-  skipBtn.textContent = 'Skip tutorial';
+  skipBtn.textContent = review ? 'Back to help' : 'Skip tutorial';
 
   function finish(): void {
-    dismissMechanic(id);
+    if (!review) dismissMechanic(id);
     closeTutorialOverlay();
     onClose();
   }
@@ -149,7 +178,8 @@ export function openTutorialOverlay(id: TutorialId, onClose: () => void): void {
     body.textContent = step.body;
     progress.textContent = `Step ${stepIndex + 1} of ${steps.length}`;
     backBtn.disabled = stepIndex === 0;
-    nextBtn.textContent = stepIndex === steps.length - 1 ? 'Start playing' : 'Next';
+    nextBtn.textContent =
+      stepIndex === steps.length - 1 ? (review ? 'Done' : 'Start playing') : 'Next';
     nextBtn.focus();
   }
 
@@ -180,6 +210,74 @@ export function openTutorialOverlay(id: TutorialId, onClose: () => void): void {
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
   renderStep();
+}
+
+export function openHelpOverlay(onClose: () => void = () => {}): void {
+  closeHelpOverlay();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'help-overlay';
+  overlay.className = 'modal-overlay';
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-labelledby', 'help-title');
+
+  const panel = document.createElement('div');
+  panel.className = 'modal-panel help-panel';
+
+  const title = document.createElement('h2');
+  title.id = 'help-title';
+  title.className = 'modal-title';
+  title.textContent = 'How to play';
+
+  const intro = document.createElement('p');
+  intro.className = 'help-intro';
+  intro.textContent =
+    'Pick a topic to review the rules. You can reopen this anytime from Settings.';
+
+  const topics = document.createElement('div');
+  topics.className = 'help-topics';
+
+  for (const topic of HELP_TOPICS) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'btn help-topic-btn';
+    btn.textContent = topic.label;
+    btn.addEventListener('click', () => {
+      closeHelpOverlay();
+      openTutorialOverlay(topic.id, () => openHelpOverlay(onClose), { review: true });
+    });
+    topics.appendChild(btn);
+  }
+
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'btn modal-close';
+  closeBtn.textContent = 'Close';
+  closeBtn.addEventListener('click', () => {
+    closeHelpOverlay();
+    onClose();
+  });
+
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) {
+      closeHelpOverlay();
+      onClose();
+    }
+  });
+
+  panel.append(title, intro, topics, closeBtn);
+  overlay.appendChild(panel);
+  document.body.appendChild(overlay);
+  closeBtn.focus();
+}
+
+export function closeHelpOverlay(): void {
+  document.getElementById('help-overlay')?.remove();
+}
+
+export function isHelpOpen(): boolean {
+  return document.getElementById('help-overlay') !== null;
 }
 
 export function closeTutorialOverlay(): void {

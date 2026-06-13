@@ -3,6 +3,7 @@ import type { GameSettings } from '../game/settings';
 export type SettingsPanelOptions = {
   settings: GameSettings;
   onChange: (settings: GameSettings) => void;
+  onHelp: () => void;
   onResetData: () => void;
   onClose: () => void;
 };
@@ -47,6 +48,12 @@ export function openSettingsPanel(options: SettingsPanelOptions): void {
     (checked) => options.onChange({ ...options.settings, reduceMotion: checked }),
   );
 
+  const helpBtn = document.createElement('button');
+  helpBtn.type = 'button';
+  helpBtn.className = 'btn settings-help-btn';
+  helpBtn.textContent = 'How to play';
+  helpBtn.addEventListener('click', options.onHelp);
+
   const resetBtn = document.createElement('button');
   resetBtn.type = 'button';
   resetBtn.className = 'btn settings-reset-btn';
@@ -67,7 +74,7 @@ export function openSettingsPanel(options: SettingsPanelOptions): void {
     if (event.target === overlay) options.onClose();
   });
 
-  panel.append(title, soundRow, hapticRow, motionRow, resetHint, resetBtn, closeBtn);
+  panel.append(title, soundRow, hapticRow, motionRow, helpBtn, resetHint, resetBtn, closeBtn);
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
   closeBtn.focus();
