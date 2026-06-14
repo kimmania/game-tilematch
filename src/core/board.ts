@@ -156,18 +156,48 @@ function settleBoardAfterClear(state: GameState, rng: SeededRng): SettleFrame {
     })
     .filter((entry): entry is NonNullable<typeof entry> => entry != null);
 
-  const spawns: TileSpawn[] = [];
-  const colSpawnCount = new Map<number, number>();
+  const rows = state.grid.length;
+  const cols = state.grid[0]!.length;
 
-  for (let row = 0; row < state.grid.length; row += 1) {
-    for (let col = 0; col < state.grid[0]!.length; col += 1) {
+  // Precompute each empty cell's fall-in start row from geometry alone. Each
+  // contiguous run of empty cells in a column is a stack of new tiles entering
+  // from just above the run, so every tile in the run travels the same distance
+  // (parallel fall, no crossing). Done before filling so runs reflect the gaps.
+  const fromRowByCell = new Map<string, number>();
+  for (let col = 0; col < cols; col += 1) {
+    let row = 0;
+    while (row < rows) {
+      const fillable =
+        state.grid[row]![col]!.tile === null && state.grid[row]![col]!.crateLayers === 0;
+      if (!fillable) {
+        row += 1;
+        continue;
+      }
+
+      const runStart = row;
+      while (
+        row < rows &&
+        state.grid[row]![col]!.tile === null &&
+        state.grid[row]![col]!.crateLayers === 0
+      ) {
+        row += 1;
+      }
+      const runLength = row - runStart;
+      for (let i = 0; i < runLength; i += 1) {
+        fromRowByCell.set(`${runStart + i},${col}`, runStart + i - runLength);
+      }
+    }
+  }
+
+  // Fill row by row to preserve deterministic RNG consumption order.
+  const spawns: TileSpawn[] = [];
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
       const cell = state.grid[row]![col]!;
       if (cell.tile !== null || cell.crateLayers > 0) continue;
 
-      const offset = colSpawnCount.get(col) ?? 0;
-      colSpawnCount.set(col, offset + 1);
       cell.tile = makeTile(rng.pick(state.palette));
-      spawns.push({ to: { row, col }, fromRow: -1 - offset });
+      spawns.push({ to: { row, col }, fromRow: fromRowByCell.get(`${row},${col}`) ?? row - 1 });
     }
   }
 

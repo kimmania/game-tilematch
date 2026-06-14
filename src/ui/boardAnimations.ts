@@ -2,13 +2,24 @@ import type { CascadeStep, Coord, GameState, SettleFrame, Tile } from '../core/t
 import { TILE_CSS } from '../core/tileColors';
 
 const CLEAR_MS = 160;
-const FALL_MS = 300;
 const SWAP_MS = 140;
 const STEP_GAP_MS = 60;
-const FALL_EASING = 'cubic-bezier(0.33, 1, 0.68, 1)';
+// Constant fall velocity so tiles dropping different distances move at the same
+// speed. Duration scales with travel distance (clamped) for a natural feel.
+const FALL_PER_CELL_MS = 46;
+const FALL_MIN_MS = 130;
+const FALL_MAX_MS = 460;
+// Ease-in (accelerating) reads as gravity; a soft tail keeps it from snapping.
+const FALL_EASING = 'cubic-bezier(0.5, 0, 0.7, 1)';
+const SWAP_EASING = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
 function wait(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function fallDuration(rowDistance: number): number {
+  const dist = Math.max(1, Math.abs(rowDistance));
+  return Math.min(FALL_MAX_MS, Math.max(FALL_MIN_MS, dist * FALL_PER_CELL_MS));
 }
 
 function cellEl(root: HTMLElement, coord: Coord): HTMLElement | null {
@@ -72,8 +83,9 @@ function moveFloater(
   dx: number,
   dy: number,
   duration: number,
+  easing: string = FALL_EASING,
 ): void {
-  floater.style.transition = `transform ${duration}ms ${FALL_EASING}`;
+  floater.style.transition = `transform ${duration}ms ${easing}`;
   requestAnimationFrame(() => {
     floater.style.transform = `translate(${dx}px, ${dy}px)`;
   });
@@ -107,6 +119,8 @@ async function animateSettle(
 
   const board = boardRect(root);
   const layer = createAnimLayer(root);
+  const stride = measureVerticalStride(root);
+  let maxDuration = 0;
 
   for (const fall of settle.falls) {
     const fromRect = cellCenterRect(root, fall.from);
@@ -116,7 +130,9 @@ async function animateSettle(
 
     hideTile(sourceTile);
     const floater = mountFloater(layer, board, fromRect, sourceTile.cloneNode(true) as HTMLElement);
-    moveFloater(floater, toRect.left - fromRect.left, toRect.top - fromRect.top, FALL_MS);
+    const duration = fallDuration(fall.to.row - fall.from.row);
+    maxDuration = Math.max(maxDuration, duration);
+    moveFloater(floater, toRect.left - fromRect.left, toRect.top - fromRect.top, duration);
   }
 
   for (const spawn of settle.spawns) {
@@ -126,14 +142,15 @@ async function animateSettle(
     if (!slot.tile) continue;
 
     const floater = mountFloater(layer, board, toRect, createTileElement(slot.tile));
-    const stride = measureVerticalStride(root);
     const deltaRows = spawn.to.row - spawn.fromRow;
     floater.style.transform = `translate(0, ${-deltaRows * stride}px)`;
     floater.getBoundingClientRect();
-    moveFloater(floater, 0, 0, FALL_MS);
+    const duration = fallDuration(deltaRows);
+    maxDuration = Math.max(maxDuration, duration);
+    moveFloater(floater, 0, 0, duration);
   }
 
-  await wait(FALL_MS + 24);
+  await wait(maxDuration + 24);
   removeAnimLayer(layer);
 }
 
@@ -166,8 +183,8 @@ async function animateSwap(root: HTMLElement, a: Coord, b: Coord): Promise<void>
 
   const floaterA = mountFloater(layer, board, rectA, tileA.cloneNode(true) as HTMLElement);
   const floaterB = mountFloater(layer, board, rectB, tileB.cloneNode(true) as HTMLElement);
-  moveFloater(floaterA, rectB.left - rectA.left, rectB.top - rectA.top, SWAP_MS);
-  moveFloater(floaterB, rectA.left - rectB.left, rectA.top - rectB.top, SWAP_MS);
+  moveFloater(floaterA, rectB.left - rectA.left, rectB.top - rectA.top, SWAP_MS, SWAP_EASING);
+  moveFloater(floaterB, rectA.left - rectB.left, rectA.top - rectB.top, SWAP_MS, SWAP_EASING);
 
   await wait(SWAP_MS + 24);
   removeAnimLayer(layer);
