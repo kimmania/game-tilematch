@@ -300,6 +300,7 @@ export class TileMatchApp {
         applyMotionClass(next.reduceMotion);
         configureAudio(next);
         configureHaptics(next);
+        this.board.destroy();
         this.board = createGridBoard(document.getElementById('board-host')!, {
           reduceMotion: next.reduceMotion,
           onSwapAttempt: (a, b) => void this.handleSwap(a, b),

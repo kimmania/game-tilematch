@@ -1,0 +1,97 @@
+@keyframes tile-pop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  45% {
+    transform: scale(1.12);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: scale(0.35);
+    opacity: 0;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-cell.invalid-swap {
+    animation: none;
+  }
+
+  .tile-clearing {
+    animation: none;
+    opacity: 0;
+  }
+
+  .win-panel {
+    animation: none;
+  }
+
+  .grid-cell,
+  .grid-board,
+  .btn,
+  .level-cell {
+    transition: none;
+  }
+}
+
+@media (max-height: 760px) {
+  #app {
+    gap: 6px;
+  }
+
+  .game-hud {
+    padding: 8px 12px;
+  }
+
+  .level-title {
+    margin-bottom: 6px;
+    font-size: 1rem;
+  }
+
+  .hint {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+}
+
+@media (max-height: 640px) {
+  .hint {
+    display: none;
+  }
+
+  .title {
+    font-size: 1.15rem;
+  }
+
+  .hud-stat-card {
+    padding: 6px 8px;
+  }
+}
